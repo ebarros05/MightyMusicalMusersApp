@@ -1,10 +1,13 @@
 # MightyMusicalMusersApp
 Interface for the MightMusicalMusers database
 ### File Overview
+```
+MightyMusicalMusersApp
 ┣ 📂daos (data access objects CRUD)
 ┣ 📂docs (documents for programmers)
 ┣ 📂lib (required postgresql driver for JDBC)
 ┣ 📂models (POJOs for User,)
+```
 
 # Setup instructions
 - Please use **JDK 23.0.2** to minimize any compatibility issues.
