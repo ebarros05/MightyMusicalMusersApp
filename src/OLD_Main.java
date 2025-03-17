@@ -1,4 +1,3 @@
-package src.src;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.*;
@@ -54,7 +53,7 @@ public class OLD_Main {
 
             // UserDAO.registerUser(conn, newUser);
             
-            UserDAO.login(conn, "jtAIwKgjnY", "qkrC-O&0");
+            daos.UserDAO.login(conn, "mordoplays", "Password@123");
 
             //List<User> users = getAllUsers(conn);
             //System.out.println("All Users:");
