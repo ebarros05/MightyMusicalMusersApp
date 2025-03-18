@@ -26,7 +26,7 @@ public class Song {
     public String getTitle() {return this.title;}
     public int getLength() {return this.length;}
     public Date getReleaseDate() {return this.releaseDate;}
-    public int getGenreId() {return this.genreId;}
+    public int getGenreId() {return this.genre.getId();}
 
     @Override
     public String toString() {
