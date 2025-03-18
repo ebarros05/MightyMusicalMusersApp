@@ -8,15 +8,17 @@ public class Song {
     private String title;
     private int length;
     private Date releaseDate;
+    private Genre genre;
     // Should we connect this back to the album(s) the song appears on?
     // Ex. List<Album> appearsOn;
 
-    public Song(int id, String title, int length, Date releaseDate) {
+    public Song(int id, String title, int length, Date releaseDate, Genre genre) {
 
         this.id = id;
         this.title = title;
         this.length = length;
         this.releaseDate = releaseDate;
+        this.genre = genre;
 
     }
 
@@ -24,11 +26,12 @@ public class Song {
     public String getTitle() {return this.title;}
     public int getLength() {return this.length;}
     public Date getReleaseDate() {return this.releaseDate;}
+    public int getGenreId() {return this.genreId;}
 
     @Override
     public String toString() {
 
-        return this.id + "; " + this.title + "; " + this.length + "; " + this.releaseDate;
+        return this.id + "; " + this.title + "; " + this.length + "; " + this.releaseDate +  "; " + this.genre.toString();
 
     }
 
