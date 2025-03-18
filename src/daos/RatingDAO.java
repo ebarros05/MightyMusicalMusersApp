@@ -1,5 +1,9 @@
 package daos;
 
+import models.Song;
+import models.User;
+
+import java.sql.PreparedStatement;
 import java.sql.*;
 
 public class RatingDAO {
@@ -10,8 +14,8 @@ public class RatingDAO {
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stme.setInt(1, rating);
-            stmt.setUsername(2, user.getUsername());
+            stmt.setInt(1, rating);
+            stmt.setString(2, user.getUsername());
             stmt.setInt(3, song.getId());
 
 
@@ -27,7 +31,7 @@ public class RatingDAO {
 
             }
 
-        } catch (SQLEXception e) {
+        } catch (SQLException e) {
 
             System.out.println("Error inserting rating: " + e.getMessage());
 
