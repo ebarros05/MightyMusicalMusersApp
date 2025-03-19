@@ -95,6 +95,94 @@ public class OLD_Main {
 
             //TODO check if AlbumDAO is working as intended
 
+            // TODO: While Loop that handles user inputs.
+            // Everything below will be place holder messages, just acting and existing
+            // for the loop. Any desires to change what is printed is completely fine.
+            // Additionally, responsibility, whilst could be considered bad practice, is
+            // placed within smaller functions in order to increase readability.
+
+            // Placeholder welcome message (Not sure what to put here:
+            System.out.println("The Mighter Musical Musers!");
+            boolean running = true; boolean logged_in = false;
+            Scanner in = new Scanner(System.in);
+
+            while(running){
+                System.out.println("Options: \nEnter the number of your desired option.");
+
+                // First checks if the user is logged in or not
+                // Need to potentially define if create account will disappear if user logs in.
+                // Currently, holds whether logged in, then calling switching what gets printed
+
+                if(logged_in){
+                    System.out.println("1: Create Collection of Songs");
+                    System.out.println("2: ")
+                    System.out.println("3: List Search Options Menu");
+                } else {
+                    System.out.println("1: Login");
+                    System.out.println("2: Create Account");
+                    System.out.println("3: List Search Options Menu");
+                }
+                int option = in.nextInt();
+
+                // Options for when user is not logged in (Login and Create Account)
+                if(logged_in){
+
+                } else {
+                    String username, password;
+                    switch (option) {
+                        case 1:
+                            System.out.println("Logging in:");
+                            System.out.println("Please input your username: ");
+                            username = in.nextLine();
+                            System.out.println("Please input your password: ");
+                            password = in.nextLine();
+
+                            // TODO: Should we store the current user logging in to be used later?
+                            daos.UserDAO.login(conn, username, password);
+                            logged_in = true;
+
+                            break;
+                        case 2:
+                            // TODO: Might need to place checks that user's input is valid.
+                            System.out.println("Registering account:");
+
+                            System.out.println("Please enter a username:");
+                            username = in.nextLine();
+
+                            System.out.println("Please enter a secure password:");
+                            password = in.nextLine();
+
+                            System.out.println("Please enter your name, using a space between your first and last name:");
+                            String full_name = in.nextLine();
+                            // Use split to separate first and last names, using the array in the constructor.
+                            String[] name_parts = full_name.split(" ");
+
+                            System.out.println("Please enter in your email:");
+                            String email = in.nextLine();
+
+                            System.out.println("Please enter in your date-of-birth:");
+                            String date_of_birth = in.nextLine();
+                            java.sql.Date dateObj = java.sql.Date.valueOf(date_of_birth);
+
+                            User new_User = new User(
+                                    username,
+                                    password,
+                                    name_parts[0],
+                                    name_parts[1],
+                                    email,
+                                    dateObj,
+                                    new Timestamp(System.currentTimeMillis()),
+                                    new Timestamp(System.currentTimeMillis()));
+
+                            daos.UserDAO.registerUser(conn, new_User);
+                            // After the user is registered, are we assuming that the User is also being logged in?
+                            break;
+                    }
+                }
+
+                // Universal Options:
+            }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
