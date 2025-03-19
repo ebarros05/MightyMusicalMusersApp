@@ -10,7 +10,7 @@ public class UserDAO {
 
     public static void registerUser(Connection conn, User user) {
         String sql = "INSERT INTO users (username, password, first, last, email, date_of_birth, last_accessed_date, creation_date) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -106,29 +106,73 @@ public class UserDAO {
 
         return false;
     }
-    public static List<User> getAllUsers(Connection conn) {
+
+    public static List<User> searchUsersByUsername(Connection conn, String username) {
         List<User> users = new ArrayList<>();
-        String sql = "SELECT username, password, first, last, email, date_of_birth, last_accessed_date, creation_date FROM users";
+        String sql = "SELECT username, password, first, last, email, date_of_birth, last_accessed_date, creation_date " +
+                "FROM users WHERE username = ?";
 
-        try (Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, username);
 
-            while (rs.next()) {
-                User user = new User(
-                        rs.getString("username"),
-                        rs.getString("password"),
-                        rs.getString("first"),
-                        rs.getString("last"),
-                        rs.getString("email"),
-                        rs.getDate("date_of_birth"),
-                        rs.getTimestamp("last_accessed_date"),
-                        rs.getTimestamp("creation_date")
-                );
-                users.add(user);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    User user = new User(
+                            rs.getString("username"),
+                            rs.getString("password"),
+                            rs.getString("first"),
+                            rs.getString("last"),
+                            rs.getString("email"),
+                            rs.getDate("date_of_birth"),
+                            rs.getTimestamp("last_accessed_date"),
+                            rs.getTimestamp("creation_date")
+                    );
+                    users.add(user);
+                }
+
+                if (users.isEmpty()) {
+                    System.out.println("No users found with username: " + username);
+                }
+
             }
 
         } catch (SQLException e) {
-            System.out.println("Error retrieving users: " + e.getMessage());
+            System.out.println("Error searching users by username: " + e.getMessage());
+        }
+
+        return users;
+    }
+    public static List<User> searchUsersByEmail(Connection conn, String email) {
+        List<User> users = new ArrayList<>();
+        String sql = "SELECT username, password, first, last, email, date_of_birth, last_accessed_date, creation_date " +
+                "FROM users WHERE email = ?";
+
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, email);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    User user = new User(
+                            rs.getString("username"),
+                            rs.getString("password"),
+                            rs.getString("first"),
+                            rs.getString("last"),
+                            rs.getString("email"),
+                            rs.getDate("date_of_birth"),
+                            rs.getTimestamp("last_accessed_date"),
+                            rs.getTimestamp("creation_date")
+                    );
+                    users.add(user);
+                }
+
+                if (users.isEmpty()) {
+                    System.out.println("No users found with the email: " + email);
+                }
+
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error searching users with the email: " + e.getMessage());
         }
 
         return users;
