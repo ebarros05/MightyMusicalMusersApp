@@ -4,6 +4,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Scanner;
+import java.util.regex.Pattern;
 
 import daos.PlayHistoryDAO;
 import daos.PlaylistDAO;
@@ -53,7 +55,7 @@ public class OLD_Main {
 
             // UserDAO.registerUser(conn, newUser);
             
-            daos.UserDAO.login(conn, "mordoplays", "Password@123");
+            //daos.UserDAO.login(conn, "mordoplays", "Password@123");
 
             //List<User> users = getAllUsers(conn);
             //System.out.println("All Users:");
@@ -102,8 +104,9 @@ public class OLD_Main {
             // sometimes placed within smaller functions in order to increase readability.
 
             // Placeholder welcome message (Not sure what to put here:
-            System.out.println("The Mighter Musical Musers!");
-            boolean running = true; boolean logged_in = false;
+            System.out.println("Welcome to the Mighter Musical Musers!");
+            boolean running = true;
+            User logged_in = null;
             Scanner in = new Scanner(System.in);
 
             while(running){
@@ -113,7 +116,7 @@ public class OLD_Main {
                 // Need to potentially define if create account will disappear if user logs in.
                 // Currently, holds whether logged in, then calling switching what gets printed
 
-                if(logged_in){
+                if(logged_in != null){
                     // Order is up to debate, can be changed at some point
 
                     // TODO: Gives user the option to listen to a playlist or song
@@ -138,7 +141,7 @@ public class OLD_Main {
                 int option = in.nextInt();
 
                 // Options for when user is not logged in (Login and Create Account)
-                if(logged_in){
+                if(logged_in != null){
                     // TODO: Implement user input handling when logged in
                 } else {
                     String username, password;
@@ -150,45 +153,77 @@ public class OLD_Main {
                             System.out.println("Please input your password: ");
                             password = in.nextLine();
 
-                            // TODO: Should we store the current user logging in to be used later?
-                            daos.UserDAO.login(conn, username, password);
-                            logged_in = true;
-
+                            UserDAO.login(conn, username, password);
+                            logged_in = UserDAO.searchUsersByUsername(conn, username).get(0);
+                            //TODO add checks if the login information doesn't exist
                             break;
                         case 2:
-                            // TODO: Might need to place checks that user's input is valid.
-                            System.out.println("Registering account:");
+                            final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$", Pattern.CASE_INSENSITIVE);
+                            final Pattern PASSWORD_PATTERN = Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^a-zA-Z\\d]).{8,}$");
+
+                            System.out.println("Registering account...");
 
                             System.out.println("Please enter a username:");
                             username = in.nextLine();
 
-                            System.out.println("Please enter a secure password:");
-                            password = in.nextLine();
+                            String pword;
+                            while (true) {
+                                System.out.println("Please enter a secure password:");
+                                pword = in.nextLine();
 
-                            System.out.println("Please enter your name, using a space between your first and last name:");
-                            String full_name = in.nextLine();
-                            // Use split to separate first and last names, using the array in the constructor.
-                            String[] name_parts = full_name.split(" ");
+                                if (PASSWORD_PATTERN.matcher(pword).matches()) {
+                                    break;
+                                } else {
+                                    System.out.println("Invalid password! It must have at least:\n- 8 characters\n- One lowercase\n- One uppercase\n- One digit\n- One special character.\nPlease try again.");
+                                }
+                            }
 
-                            System.out.println("Please enter in your email:");
-                            String email = in.nextLine();
+                            System.out.println("Please enter your first name last name:");
+                            String f_name = in.nextLine();
 
-                            System.out.println("Please enter in your date-of-birth:");
-                            String date_of_birth = in.nextLine();
-                            java.sql.Date dateObj = java.sql.Date.valueOf(date_of_birth);
+                            System.out.println("Please enter your last name:");
+                            String l_name = in.nextLine();
 
-                            User new_User = new User(
+
+                            String email;
+                            while (true) {
+                                System.out.println("Please enter your email:");
+                                email = in.nextLine().trim();
+
+                                if (EMAIL_PATTERN.matcher(email).matches()) {
+                                    break;
+                                } else {
+                                    System.out.println("Invalid email format! Please enter a valid email (e.g., user@example.com).");
+                                }
+                            }
+
+                            String date_of_birth;
+                            Date dateObj = null;
+                            while (true) {
+                                System.out.println("Please enter your date of birth (yyyy-mm-dd):");
+                                date_of_birth = in.nextLine().trim();
+
+                                try {
+                                    dateObj = Date.valueOf(date_of_birth);
+                                    break;
+                                } catch (IllegalArgumentException e) {
+                                    System.out.println("Invalid date format! Please enter date in yyyy-mm-dd format.");
+                                }
+                            }
+                            logged_in = new User(
                                     username,
-                                    password,
-                                    name_parts[0],
-                                    name_parts[1],
+                                    pword,
+                                    f_name,
+                                    l_name,
                                     email,
                                     dateObj,
                                     new Timestamp(System.currentTimeMillis()),
                                     new Timestamp(System.currentTimeMillis()));
+                            // ^^^ updating 'logged_in' is more important for CLI
+                            // VVV not neccesary, as logging in through the DB side just updates last access time
+                            // UserDAO.login(conn, logged_in.getUsername(), logged_in.getPassword());
 
-                            daos.UserDAO.registerUser(conn, new_User);
-                            // After the user is registered, are we assuming that the User is also being logged in?
+                            daos.UserDAO.registerUser(conn, logged_in);
                             break;
                     }
                 }
