@@ -99,7 +99,7 @@ public class OLD_Main {
             // Everything below will be place holder messages, just acting and existing
             // for the loop. Any desires to change what is printed is completely fine.
             // Additionally, responsibility, whilst could be considered bad practice, is
-            // placed within smaller functions in order to increase readability.
+            // sometimes placed within smaller functions in order to increase readability.
 
             // Placeholder welcome message (Not sure what to put here:
             System.out.println("The Mighter Musical Musers!");
@@ -114,19 +114,32 @@ public class OLD_Main {
                 // Currently, holds whether logged in, then calling switching what gets printed
 
                 if(logged_in){
-                    System.out.println("1: Create Collection of Songs");
-                    System.out.println("2: ")
-                    System.out.println("3: List Search Options Menu");
+                    // Order is up to debate, can be changed at some point
+
+                    // TODO: Gives user the option to listen to a playlist or song
+                    System.out.println("1: Listen to Some Music!");
+
+                    // Within the Collections menu (option 1): pulls up the options to modify the name,
+                    // delete certain collections, add and delete songs and albums from a collection
+                    System.out.println("2: View List of Collections");
+
+                    System.out.println("3: Song Search Options");
+
+                    System.out.println("4: Create New Collection of Songs");
+
+                    // This will lead into a function call which will prompt the user to follow via email or username
+                    System.out.println("4: Follow a User");
                 } else {
                     System.out.println("1: Login");
                     System.out.println("2: Create Account");
-                    System.out.println("3: List Search Options Menu");
+                    System.out.println("3: Song Search Options");
                 }
+                System.out.println("9999: Exit the Program");
                 int option = in.nextInt();
 
                 // Options for when user is not logged in (Login and Create Account)
                 if(logged_in){
-
+                    // TODO: Implement user input handling when logged in
                 } else {
                     String username, password;
                     switch (option) {
@@ -180,7 +193,16 @@ public class OLD_Main {
                     }
                 }
 
-                // Universal Options:
+                // Universal Options
+                switch (option) {
+                    case 3:
+                        // Call function that repeatedly allows for song searches
+                        break;
+                    case 9999:
+                        running = false;
+                        // Another placeholder just because not sure what to put.
+                        System.out.println("Exiting the database.");
+                }
             }
 
         } catch (SQLException e) {
