@@ -22,7 +22,7 @@ public class PlayHistoryDAO {
     }
 
     public static void playPlaylist(Connection conn, String username, String playlistName) {
-        String sql = "SELECT s.song_id FROM playlist as p INNER JOIN song as s on p.song_id = s.song_id WHERE p.username = ? AND playlist_name = ?";
+        String sql = "SELECT s.song_id FROM playlist AS p INNER JOIN song AS s ON p.song_id = s.song_id WHERE p.username = ? AND playlist_name = ?";
 
         try(PreparedStatement stmt =  conn.prepareStatement(sql)) {
             stmt.setString(1, username);

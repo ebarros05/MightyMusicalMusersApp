@@ -100,6 +100,39 @@ public class PlaylistDAO {
             e.printStackTrace();
         }
     }
+
+    public static void addAlbumToPlaylist(Connection conn, String username, String playlistName, int playlistNumber, int albumId) {
+        String sql "SELECT s.song_id FROM songs_on_album AS s INNER JOIN album AS a ON a.album_id = s.album_id where a.album_id = ?";
+
+        try(PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, albumId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    int songId = rs.getInt("song_id");
+                    addSongToPlaylist(conn, username, playlistName, playlistNumber, songId);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void deleteAlbumFromPlaylist(Connection conn, String username, String playlistName, int playlistNumber, int albumId) {
+        String sql = "SELECT s.song_id FROM songs_on_album AS s INNER JOIN album AS a ON a.album_id = s.album_id where a.album_id = ?";
+
+        try(PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, albumId);
+            try(ResultSet rs = stmt.executeQuery()) {
+                while(rs.next()) {
+                    int songId = rs.getInt("song_id");
+                    removeSongFromPlaylist(conn, username, playlistName, playlistNumber, songId);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
     
     public static void displayPlaylist(Connection conn, String username, String playlistName) {
         String sql = "SELECT playlist_number, song_id FROM playlist WHERE username = ? AND playlist_name = ? ORDER BY playlist_number ASC";
@@ -147,7 +180,7 @@ public class PlaylistDAO {
                     int numSongs = rs.getInt("Number_of_Songs");
                     int totalDuration = rs.getInt("Total_Duration");
 
-                    System.out.println("  [" + playlistName + "] Num Songs: " + numSongs) + " Total Length: " + totalDuration;
+                    System.out.println("  [" + playlistName + "] Num Songs: " + numSongs + " Total Length: " + totalDuration);
 
                     hasPlaylists = true;
                 }
