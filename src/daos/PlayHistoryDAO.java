@@ -20,4 +20,23 @@ public class PlayHistoryDAO {
             e.printStackTrace();
         }
     }
+
+    public static void playPlaylist(Connection conn, String username, String playlistName) {
+        String sql = "SELECT s.song_id FROM playlist as p INNER JOIN song as s on p.song_id = s.song_id WHERE p.username = ? AND playlist_name = ?";
+
+        try(PreparedStatement stmt =  conn.prepareStatement(sql)) {
+            stmt.setString(1, username);
+            stmt.setString(2, playlistName);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    int songId = rs.getInt("song_id");
+                    playSong(conn, username, songId);
+                }
+            }
+
+        } catch(SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

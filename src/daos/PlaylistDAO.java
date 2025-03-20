@@ -134,7 +134,7 @@ public class PlaylistDAO {
     }
 
     public static void displayUserPlaylists(Connection conn, String username) {
-        String sql = "SELECT p.playlist_name, MAX(p.playlist_number) + 1 AS Number_of_Songs, SUM(s.song_length) AS Total_Duration FROM playlist as p INNER JOIN song as s ON p.song_id = s.song_id WHERE p.username = ? GROUP BY p.playlist_name"
+        String sql = "SELECT p.playlist_name, MAX(p.playlist_number) + 1 AS Number_of_Songs, SUM(s.song_length) AS Total_Duration FROM playlist as p INNER JOIN song as s ON p.song_id = s.song_id WHERE p.username = ? GROUP BY p.playlist_name";
 
         try(PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, username);
@@ -155,9 +155,9 @@ public class PlaylistDAO {
                 if (!hasPlaylists) {
                     System.out.println("  (No playlists for this user.)");
                 }
-            } catch(SQLException e) {
-                e.printStackTrace();
             }
+        } catch(SQLException e) {
+            e.printStackTrace();
         }
     }
     
