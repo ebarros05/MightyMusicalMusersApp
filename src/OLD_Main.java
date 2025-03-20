@@ -103,7 +103,7 @@ public class OLD_Main {
             // Additionally, responsibility, whilst could be considered bad practice, is
             // sometimes placed within smaller functions in order to increase readability.
 
-            // Placeholder welcome message (Not sure what to put here:
+            // Placeholder welcome message (Not sure what to put here)
             System.out.println("Welcome to the Mighter Musical Musers!");
             boolean running = true;
             User logged_in = null;
@@ -137,12 +137,34 @@ public class OLD_Main {
                     System.out.println("2: Create Account");
                     System.out.println("3: Song Search Options");
                 }
+                // TODO: Need to implement the log out case
+                System.out.println("9998: Log out of your account");
                 System.out.println("9999: Exit the Program");
                 int option = in.nextInt();
 
                 // Options for when user is not logged in (Login and Create Account)
                 if(logged_in != null){
                     // TODO: Implement user input handling when logged in
+                    switch (option) {
+                        case 1:
+                            // TODO: Add in way to get the songID since playSong needs songID
+                            System.out.println("Would you like to listen to: \n1. Song\n2. Playlist");
+                            int playChoice = in.nextInt();
+                            switch (playChoice) {
+                                case 1:
+                                    System.out.println("Please enter the name of the song you wish to listen to: ");
+                                case 2:
+                                    System.out.println("Please enter the name of the playlist you wish to listen to:");
+                            }
+                            String name_to_play = in.nextLine();
+
+                            // TODO: Need way to get the list of songs back from the name
+                            daos.PlayHistoryDAO.playSong(conn, logged_in.getUsername(), );
+                        case 2:
+                            System.out.println("Searching for a song:");
+                            // Calling the external function to add extra search options
+                            searchHelperFunction(conn, logged_in, );
+                    }
                 } else {
                     String username, password;
                     switch (option) {
@@ -245,4 +267,56 @@ public class OLD_Main {
         }
     }
 
+    public static void searchHelperFunction(Connection conn){
+        Scanner in = new Scanner(System.in);
+        System.out.println("How would you like to search?");
+        System.out.println("1: By Song title");
+        System.out.println("2: By Artist name");
+        System.out.println("3: By Album name");
+        System.out.println("4: By Genre name");
+        int option = in.nextInt();
+        String typeCase;
+
+        switch (option) {
+            case 1:
+                System.out.println("Enter the title of the Song you're searching for:");
+                typeCase = "title";
+                break;
+            case 2:
+                System.out.println("Enter the name of the Artist you're searching for:");
+                typeCase = "artist";
+                break;
+            case 3:
+                System.out.println("Enter the name of the Album you're searching for:");
+                typeCase = "album";
+                break;
+            case 4:
+                System.out.println("Enter the Genre of songs you're searching for:");
+                typeCase = "genre";
+                break;
+        }
+
+        String keyword = in.nextLine();
+        System.out.println("How would you like to search?");
+        System.out.println("1: Song Title");
+        System.out.println("2: Artist Name");
+        System.out.println("3: Album Name");
+        System.out.println("4: Release Year");
+        option = in.nextInt();
+        String typeSearch;
+
+        switch (option) {
+            case 1:
+                typeSearch = "title";
+                break;
+            case 2, 3:
+                typeSearch = "name";
+                break;
+            case 4:
+                typeSearch = "releaseDate";
+        }
+
+        String relativeString = in.nextLine();
+        daos.SongDAO.searchSongs(conn, keyword, typeCase, typeSearch, );
+    }
 }
