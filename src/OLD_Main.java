@@ -210,7 +210,6 @@ public class OLD_Main {
                             System.out.println("Please enter the name of the song you wish to rate:");
                             String song_name = in.nextLine();
                             Song songsToRate = daos.SongDAO.getASong(conn, song_name);
-                            int song_Num = 1;
                             if(songsToRate != null){
                                 System.out.println("How many stars do you want to rate '"+song_name+"'? [From 1 - 5 Stars]");
                                 int rating = in.nextInt();
