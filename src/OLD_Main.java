@@ -38,16 +38,6 @@ public class OLD_Main {
         try (Connection conn = DriverManager.getConnection(dbUrl, dbUser, dbPassword)) {
             System.out.println("Connected to database!");
 
-
-            //TODO check if AlbumDAO is working as intended
-
-            // TODO: While Loop that handles user inputs.
-            // Everything below will be place holder messages, just acting and existing
-            // for the loop. Any desires to change what is printed is completely fine.
-            // Additionally, responsibility, whilst could be considered bad practice, is
-            // sometimes placed within smaller functions in order to increase readability.
-
-            // Placeholder welcome message (Not sure what to put here)
             System.out.println("Welcome to the Mighter Musical Musers!");
             boolean running = true;
             User logged_in = null;
@@ -61,7 +51,6 @@ public class OLD_Main {
                 // Currently, holds whether logged in, then calling switching what gets printed
 
                 if(logged_in != null){
-                    // TODO: Gives user the option to listen to a playlist or song
                     System.out.println("Welcome, "+logged_in.getFirst()+" \""+logged_in.getUsername()+"\" "+logged_in.getLast()+"!");
                     System.out.println("Please choose from one of the options below:");
                     System.out.println("1: Your Library");
@@ -179,21 +168,16 @@ public class OLD_Main {
                             System.out.println("Goodbye, "+logged_in.getUsername()+" see you next time!");
                             logged_in = null;
                     }
+                    // Options for when user is not logged in (Login and Create Account)
                 } else {
-                    System.out.println("1: Login");
+                    System.out.println("Please choose from one of the options below:");
+                    System.out.println("1: Log in");
                     System.out.println("2: Create Account");
-                    System.out.println("3: Song Search Options");
-                }
-                // TODO: Need to implement the log out case
-                System.out.println("9998: Log out of your account");
-                System.out.println("9999: Exit the Program");
-                int option = in.nextInt();
-
-                // Options for when user is not logged in (Login and Create Account)
-                if(logged_in == null){
+                    System.out.println("3: Search");
+                    int option = in.nextInt();
                     String username, password;
                     switch (option) {
-                        case 1:
+                        case 1: //login
                             System.out.println("Logging in:");
                             System.out.println("Please input your username: ");
                             username = in.nextLine();
@@ -204,7 +188,7 @@ public class OLD_Main {
                             logged_in = UserDAO.searchUsersByUsername(conn, username).get(0);
                             //TODO add checks if the login information doesn't exist
                             break;
-                        case 2:
+                        case 2: //create acc
                             final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$", Pattern.CASE_INSENSITIVE);
                             final Pattern PASSWORD_PATTERN = Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^a-zA-Z\\d]).{8,}$");
 
@@ -270,26 +254,21 @@ public class OLD_Main {
                             // VVV not neccesary, as logging in through the DB side just updates last access time
                             // UserDAO.login(conn, logged_in.getUsername(), logged_in.getPassword());
 
-                            daos.UserDAO.registerUser(conn, logged_in);
+                            UserDAO.registerUser(conn, logged_in);
+                            break;
+                        case 3: //search
+                            //TODO implement all search functionalities:
+                            // - song search
+                            // - user search
+                            // - artist search
                             break;
                     }
                 }
-
-                // Universal Options
-                switch (option) {
-                    case 3:
-                        // Call function that repeatedly allows for song searches
-                        break;
-                    case 9999:
-                        running = false;
-                        // Another placeholder just because not sure what to put.
-                        System.out.println("Exiting the database.");
-                }
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
     }
 
     public static void searchHelperFunction(Connection conn){
