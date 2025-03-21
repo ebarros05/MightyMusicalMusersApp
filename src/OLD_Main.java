@@ -133,13 +133,11 @@ public class OLD_Main {
                                     int playlistNumber, albumId;
                                     System.out.println("Please enter a playlist name to add to:");
                                     inp = in.nextLine();
-                                    System.out.println("Please the playlist number:");
-                                    playlistNumber = in.nextInt();
                                     in.nextLine();
                                     System.out.println("Please enter the album Id to be added:");
                                     albumId = in.nextInt();
                                     in.nextLine();
-                                    PlaylistDAO.addAlbumToPlaylist(conn, logged_in.getUsername(), inp, playlistNumber, albumId);
+                                    SongDAO.addSongAlbumToPlaylist(conn, logged_in.getUsername(), inp, albumId);
                                     break;
                                 case 8:// Create new playlist
                                     String playlistName;

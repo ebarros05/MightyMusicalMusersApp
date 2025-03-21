@@ -8,6 +8,8 @@ import java.sql.*;
 import java.util.List;
 import java.util.ArrayList;
 
+import static daos.PlaylistDAO.addSongToPlaylist;
+
 public class SongDAO {
 
     public static void searchSongs(Connection conn, String keyword, String searchField, String sortBy, boolean ascending) {
@@ -153,4 +155,102 @@ public class SongDAO {
 
         return songs;
     }
+    public static Genre getGenreById(Connection conn, int genreId) {
+        String sql = "SELECT genre_id, name FROM genre WHERE genre_id = ?";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, genreId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                int id = rs.getInt("genre_id");
+                String name = rs.getString("name");
+
+                return new Genre(id, name);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null; // or throw an exception if genre should *always* exist
+    }
+
+    public static List<Song> getSongsByAlbum(Connection conn, int albumId) {
+        String albumSql = "SELECT release_date, genre_id FROM album WHERE album_id = ?";
+        String songsSql = "SELECT s.song_id, s.title, s.song_length " +
+                "FROM song s JOIN songs_on_album sa ON s.song_id = sa.song_id " +
+                "WHERE sa.album_id = ? ORDER BY s.track_number";
+
+        List<Song> songs = new ArrayList<>();
+
+        Date albumReleaseDate = null;
+        Genre albumGenre = null;
+
+        // Get release date and genre from the album
+        try (PreparedStatement stmt = conn.prepareStatement(albumSql)) {
+            stmt.setInt(1, albumId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                albumReleaseDate = rs.getDate("release_date");
+                int genreId = rs.getInt("genre_id");
+
+                // Assuming you have a method to get a Genre object from its ID
+                albumGenre = getGenreById(conn, genreId);
+
+            } else {
+                System.out.println("Album not found!");
+                return songs; // empty list
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return songs;
+        }
+
+        // Get songs on the album
+        try (PreparedStatement stmt = conn.prepareStatement(songsSql)) {
+            stmt.setInt(1, albumId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                int songId = rs.getInt("song_id");
+                String title = rs.getString("title");
+                int songLength = rs.getInt("song_length");
+
+                Song song = new Song(songId, title, songLength, albumReleaseDate, albumGenre);
+                songs.add(song);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return songs;
+    }
+
+    public static void addSongAlbumToPlaylist(Connection conn, String username, String playlistName, int albumId){
+        String sql = "SELECT s.song_id FROM songs_on_album AS s INNER JOIN album AS a ON a.album_id = s.album_id where a.album_id = ?";
+
+        try(PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, albumId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                ArrayList<Integer> songlistt = new ArrayList<>();
+                while (rs.next()) {
+                    songlistt.add(rs.getInt("song_id"));
+                }
+                int playlistNumber = 1;
+                for (Integer song_id: songlistt) {
+                    addSongToPlaylist(conn, username, playlistName, playlistNumber, song_id);
+                    playlistNumber++;
+                }
+
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
