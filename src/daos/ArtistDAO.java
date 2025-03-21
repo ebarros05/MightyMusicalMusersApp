@@ -66,7 +66,7 @@ public class ArtistDAO {
             System.out.println("Error searching by Artists Name: " + e.getMessage());
         }
 
-        return songs;
+        return artists;
     }
 
 }
