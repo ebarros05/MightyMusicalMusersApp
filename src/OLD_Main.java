@@ -7,10 +7,7 @@ import java.util.Properties;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
-import daos.PlayHistoryDAO;
-import daos.PlaylistDAO;
-import daos.SongDAO;
-import daos.UserDAO;
+import daos.*;
 import models.User;
 
 public class OLD_Main {
@@ -41,59 +38,6 @@ public class OLD_Main {
         try (Connection conn = DriverManager.getConnection(dbUrl, dbUser, dbPassword)) {
             System.out.println("Connected to database!");
 
-            // Example user data
-            // User newUser = new User(
-            //         "usernname",
-            //         "Password123!",
-            //         "first name",
-            //         "last name",
-            //         "email@aol.com",
-            //         Date.valueOf("1969-10-28"),
-            //         new Timestamp(System.currentTimeMillis()),
-            //         new Timestamp(System.currentTimeMillis())
-            // );
-
-            // UserDAO.registerUser(conn, newUser);
-            
-            //daos.UserDAO.login(conn, "mordoplays", "Password@123");
-
-            //List<User> users = getAllUsers(conn);
-            //System.out.println("All Users:");
-            //for (User user : users) {
-            //    System.out.println(user);
-            // }
-            //boolean res = UserDAO.login(conn, "mordoplays","Password@123");
-
-            //test listen to 25 songs
-            // for (int x = 1; x < 25; x++) {
-            //     PlayHistoryDAO.playSong(conn, "mordoplays", x);
-            // }
-
-            //playlist CRUD
-            //boolean res = PlaylistDAO.createPlaylist(conn, "biblioteca", 1, "mordoplays", 1);
-            // PlaylistDAO.displayPlaylist(conn, "mordoplays", "biblioteca");
-            // PlaylistDAO.addSongToPlaylist(conn, "mordoplays", "biblioteca", 2, 15);
-            // PlaylistDAO.addSongToPlaylist(conn, "mordoplays", "biblioteca", 20, 1738);
-            // // add song in an already taken playlist position:
-            // PlaylistDAO.addSongToPlaylist(conn, "mordoplays", "biblioteca", 20, 221);
-            // PlaylistDAO.removeSongFromPlaylist(conn, "mordoplays", "biblioteca", 20);
-            // boolean res = PlaylistDAO.createPlaylist(conn, "justtogetdeleted", 1, "mordoplays", 1);
-            // PlaylistDAO.renamePlaylist(conn, "mordoplays", "justtogetdeleted", "goobye");
-            // PlaylistDAO.deletePlaylist(conn, "mordoplays", "goobye");
-            // PlaylistDAO.displayPlaylist(conn, "mordoplays", "biblioteca");
-
-            // //playing song increases play count, and searching by genre works
-            // SongDAO.searchSongs(conn, "jeans", "title","title", true);
-            // PlayHistoryDAO.playSong(conn, "mordoplays", 10001);
-            // SongDAO.searchSongs(conn, "20", "genre","title", true);
-            
-            // // search by artist
-            // SongDAO.searchSongs(conn, "2hol", "artist","title", true);
-
-            //search by album name
-            //SongDAO.searchSongs(conn, "10", "album", "title", false);
-
-            //System.out.println("The action was successful:"+res);
 
             //TODO check if AlbumDAO is working as intended
 
@@ -110,28 +54,131 @@ public class OLD_Main {
             Scanner in = new Scanner(System.in);
 
             while(running){
-                System.out.println("Options: \nEnter the number of your desired option.");
+                System.out.println("Enter the number of your desired option.");
 
                 // First checks if the user is logged in or not
                 // Need to potentially define if create account will disappear if user logs in.
                 // Currently, holds whether logged in, then calling switching what gets printed
 
                 if(logged_in != null){
-                    // Order is up to debate, can be changed at some point
-
                     // TODO: Gives user the option to listen to a playlist or song
-                    System.out.println("1: Listen to Some Music!");
+                    System.out.println("Welcome, "+logged_in.getFirst()+" \""+logged_in.getUsername()+"\" "+logged_in.getLast()+"!");
+                    System.out.println("Please choose from one of the options below:");
+                    System.out.println("1: Your Library");
+                    System.out.println("2: Mighty Musical Musers Social™");
+                    System.out.println("3: Search");
+                    System.out.println("4: log out");
+                    int uoption = in.nextInt();
+                    in.nextLine();
+                    switch (uoption) {
+                        case 1:
+                            System.out.println("YOUR LIBRARY");
+                            System.out.println("-------------");
+                            System.out.println("Please choose from one of the options below:");
+                            System.out.println("1: List your playlists");
+                            System.out.println("2: Play a playlist");
+                            System.out.println("3: Play a song");
+                            System.out.println("4: Edit a playlist");
+                            System.out.println("5: Add an album to a playlist");
+                            System.out.println("6: Create new playlist");
+                            System.out.println("7: Delete playlist");
+                            int libraryOption = in.nextInt();
+                            in.nextLine();
+                            String inp;
+                            switch (libraryOption){
+                                case 1:
+                                    System.out.println("Here are your playlists:");
+                                    PlaylistDAO.displayUserPlaylists(conn, logged_in.getUsername());
+                                    break;
+                                case 2:
+                                    System.out.println("Please enter a playlist name to play");
+                                    inp = in.nextLine();
+                                    PlayHistoryDAO.playPlaylist(conn, logged_in.getUsername(), inp);
+                                    break;
+                                case 3:
+                                    System.out.println("Please enter a song name  to play");
+                                    inp = in.nextLine();
+                                    PlayHistoryDAO.playPlaylist(conn, logged_in.getUsername(), inp);
+                                    break;
+                                case 4:
+                                    String newName;
+                                    System.out.println("Please enter the playlist you would like to rename:");
+                                    inp = in.nextLine();
+                                    System.out.println("Please enter the new name for the playlist:");
+                                    newName = in.nextLine();
+                                    PlaylistDAO.renamePlaylist(conn, logged_in.getUsername(),inp, newName);
+                                    break;
+                                case 5:
+                                    int playlistNumber, albumId;
+                                    System.out.println("Please enter a playlist name to add to:");
+                                    inp = in.nextLine();
+                                    System.out.println("Please the playlist number:");
+                                    playlistNumber = in.nextInt();
+                                    in.nextLine();
+                                    System.out.println("Please enter the album Id to be added:");
+                                    albumId = in.nextInt();
+                                    in.nextLine();
+                                    PlaylistDAO.addAlbumToPlaylist(conn, logged_in.getUsername(), inp, playlistNumber, albumId);
+                                    break;
+                                case 6:
+                                    String playlistName;
+                                    int pNumber, firstSong;
+                                    System.out.println("Please enter a name for your new playlist:");
+                                    playlistName = in.nextLine();
+                                    System.out.println("Please enter the playlist number:");
+                                    pNumber = in.nextInt();
+                                    System.out.println("Please enter a first song number to add:");
+                                    firstSong = in.nextInt();
+                                    in.nextLine();
+                                    PlaylistDAO.createPlaylist(conn, playlistName, pNumber, logged_in.getUsername(), firstSong);
+                                    break;
+                                case 7:
+                                    System.out.println("Please enter the playlist name to delete:");
+                                    inp = in.nextLine();
+                                    PlaylistDAO.deletePlaylist(conn, logged_in.getUsername(), inp);
+                                    break;
+                            }
 
-                    // Within the Collections menu (option 1): pulls up the options to modify the name,
-                    // delete certain collections, add and delete songs and albums from a collection
-                    System.out.println("2: View List of Collections");
-
-                    System.out.println("3: Song Search Options");
-
-                    System.out.println("4: Create New Collection of Songs");
-
-                    // This will lead into a function call which will prompt the user to follow via email or username
-                    System.out.println("4: Follow a User");
+                        case 2:
+                            System.out.println("MIGHT MUSICAL MUSERS SOCIAL™");
+                            System.out.println("-----------------------------");
+                            System.out.println("Please choose from one of the options below:");
+                            System.out.println("1: follow user");
+                            System.out.println("2: unfollow user");
+                            System.out.println("3: follow artist");
+                            System.out.println("4: unfollow artist");
+                            int socialChoice = in.nextInt();
+                            in.nextLine();
+                            String socialInp;
+                            int artistID;
+                            switch (socialChoice) {
+                                case 1:
+                                    System.out.println("Please enter the name of the user you would like to follow:");
+                                    socialInp = in.nextLine();
+                                    UserDAO.followUser(conn, logged_in.getUsername(), socialInp);
+                                    break;
+                                case 2:
+                                    System.out.println("Please enter the name of the user you would like to unfollow:");
+                                    socialInp = in.nextLine();
+                                    UserDAO.unfollowUser(conn, logged_in.getUsername(), socialInp);
+                                    break;
+                                case 3:
+                                    System.out.println("Please enter the ID of the artist you would like to follow:");
+                                    artistID = in.nextInt();
+                                    in.nextLine();
+                                    ArtistDAO.followArtist(conn, logged_in.getUsername(), artistID);
+                                    break;
+                                case 4:
+                                    System.out.println("Please enter the ID of the artist you would like to unfollow:");
+                                    artistID = in.nextInt();
+                                    in.nextLine();
+                                    ArtistDAO.unfollowArtist(conn, logged_in.getUsername(), artistID);
+                                    break;
+                            }
+                        case 3:
+                            System.out.println("Goodbye, "+logged_in.getUsername()+" see you next time!");
+                            logged_in = null;
+                    }
                 } else {
                     System.out.println("1: Login");
                     System.out.println("2: Create Account");
@@ -143,29 +190,7 @@ public class OLD_Main {
                 int option = in.nextInt();
 
                 // Options for when user is not logged in (Login and Create Account)
-                if(logged_in != null){
-                    // TODO: Implement user input handling when logged in
-                    switch (option) {
-                        case 1:
-                            // TODO: Add in way to get the songID since playSong needs songID
-                            System.out.println("Would you like to listen to: \n1. Song\n2. Playlist");
-                            int playChoice = in.nextInt();
-                            switch (playChoice) {
-                                case 1:
-                                    System.out.println("Please enter the name of the song you wish to listen to: ");
-                                case 2:
-                                    System.out.println("Please enter the name of the playlist you wish to listen to:");
-                            }
-                            String name_to_play = in.nextLine();
-
-                            // TODO: Need way to get the list of songs back from the name
-                            daos.PlayHistoryDAO.playSong(conn, logged_in.getUsername(), );
-                        case 2:
-                            System.out.println("Searching for a song:");
-                            // Calling the external function to add extra search options
-                            searchHelperFunction(conn, logged_in, );
-                    }
-                } else {
+                if(logged_in == null){
                     String username, password;
                     switch (option) {
                         case 1:
@@ -317,6 +342,6 @@ public class OLD_Main {
         }
 
         String relativeString = in.nextLine();
-        daos.SongDAO.searchSongs(conn, keyword, typeCase, typeSearch, );
+        //daos.SongDAO.searchSongs(conn, keyword, typeCase, typeSearch, );
     }
 }
