@@ -48,7 +48,8 @@ public class OLD_Main {
             Scanner in = new Scanner(System.in);
 
             while(running){
-                System.out.println("Enter the number of your desired option.");
+                System.out.println("------------------------------------------");
+                System.out.println("* Enter the number of your desired option.");
 
                 // First checks if the user is logged in or not
                 // Need to potentially define if create account will disappear if user logs in.
@@ -171,26 +172,14 @@ public class OLD_Main {
                             }
                             break;
                         case 3:
-                            System.out.println("What would you like to search for?");
-                            System.out.println("1. Search for Songs!");
-                            System.out.println("2. Search for Users!");
-                            System.out.println("3. Search for Artists!");
-                            int searchChoice = in.nextInt();
-
-                            switch (searchChoice) {
-                                case 1:
-                                    songSearcher(conn);
-                                    break;
-                                case 2:
-                                    userSearcher(conn, logged_in);
-                                    break;
-                                case 3:
-                                    artistSearcher(conn, logged_in);
-                                    break;
-                            }
+                            System.out.println("SEARCHING!");
+                            System.out.println("----------");
+                            searchHelperFunction(conn, logged_in);
                             break;
                         case 4:
                             // Performs the rating for songs
+                            System.out.println("RATING");
+                            System.out.println("------");
                             System.out.println("Please enter the name of the song you wish to rate:");
                             String song_name = in.nextLine();
                             List<Song> songs = daos.SongDAO.getSong(conn, song_name);
@@ -226,6 +215,8 @@ public class OLD_Main {
                     String username, password;
                     switch (option) {
                         case 1: //login
+                            System.out.println("LOGIN");
+                            System.out.println("-----");
                             boolean successful = false;
                             while (!successful){
                                 System.out.println("Please input your username: ");
@@ -258,6 +249,8 @@ public class OLD_Main {
 
                             break;
                         case 2: //create acc
+                            System.out.println("CREATING ACCOUNT");
+                            System.out.println("----------------");
                             final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$", Pattern.CASE_INSENSITIVE);
                             final Pattern PASSWORD_PATTERN = Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^a-zA-Z\\d]).{8,}$");
 
@@ -336,23 +329,9 @@ public class OLD_Main {
                             UserDAO.registerUser(conn, logged_in);
                             break;
                         case 3: //search
-                            System.out.println("What would you like to search for?");
-                            System.out.println("1. Search for Songs!");
-                            System.out.println("2. Search for Users!");
-                            System.out.println("3. Search for Artists!");
-                            int searchChoice = in.nextInt();
-
-                            switch (searchChoice) {
-                                case 1:
-                                    songSearcher(conn);
-                                    break;
-                                case 2:
-                                    userSearcher(conn, logged_in);
-                                    break;
-                                case 3:
-                                    artistSearcher(conn, logged_in);
-                                    break;
-                            }
+                            System.out.println("SEARCHING!");
+                            System.out.println("----------");
+                            searchHelperFunction(conn, null);
                             break;
                     }
                 }
@@ -367,7 +346,35 @@ public class OLD_Main {
         }
     }
 
+    /**
+     * Below are functions that assist in the multi-level search functions, which would be hard to read otherwise.
+     * The first function is used to call the subsequent levels of the search functions: passing in the User object
+     * if logged in, or null if not logged in for some of the searches.
+     */
+
+    public static void searchHelperFunction(Connection conn, User logged_in){
+        Scanner in = new Scanner(System.in);
+        System.out.println("What would you like to search for?");
+        System.out.println("1. Search for Songs");
+        System.out.println("2. Search for Users");
+        System.out.println("3. Search for Artists");
+        int searchChoice = in.nextInt();
+
+        switch (searchChoice) {
+            case 1:
+                songSearcher(conn);
+                break;
+            case 2:
+                userSearcher(conn, logged_in);
+                break;
+            case 3:
+                artistSearcher(conn, logged_in);
+                break;
+        }
+    }
+
     public static void songSearcher(Connection conn){
+        Scanner in = new Scanner(System.in);
         System.out.println("How would you like to search for a song?");
         System.out.println("1: By Song title");
         System.out.println("2: By Artist name");
