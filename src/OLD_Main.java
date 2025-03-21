@@ -115,7 +115,7 @@ public class OLD_Main {
                                     System.out.println("Please enter the position of the song in the playlist:");
                                     pnumber = in.nextInt();
                                     in.nextLine();
-                                    System.out.println("Please enter the song id to delete");
+                                    System.out.println("Please enter the song id to add:");
                                     songnumber = in.nextInt();
                                     in.nextLine();
                                     PlaylistDAO.addSongToPlaylist(conn, logged_in.getUsername(), inp, pnumber, songnumber);
