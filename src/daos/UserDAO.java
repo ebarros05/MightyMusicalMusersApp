@@ -73,7 +73,7 @@ public class UserDAO {
         }
     }
 
-    public boolean followUser(Connection conn, String username, String followUsername) {
+    public static boolean followUser(Connection conn, String username, String followUsername) {
         String sql = "INSERT INTO following_user (username, following) VALUES (?, ?)";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -90,7 +90,7 @@ public class UserDAO {
         return false;
     }
 
-    public boolean unfollowUser(Connection conn, String username, String followUsername) {
+    public static boolean unfollowUser(Connection conn, String username, String followUsername) {
         String sql = "DELETE FROM following_user WHERE username = ? AND following = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
