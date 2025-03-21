@@ -10,7 +10,7 @@ public class RatingDAO {
 
     public static void rateSong(Connection conn, Song song, User user, int rating) {
 
-        String sql = "INSERT INTO rating (song_id, rating) VALUES (?, ?)";
+        String sql = "INSERT INTO rating (stars, username, song_id) VALUES (?, ?, ?)";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 

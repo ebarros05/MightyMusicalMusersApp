@@ -1,6 +1,12 @@
 package daos;
 
+import models.Genre;
+import models.Song;
+import models.User;
+
 import java.sql.*;
+import java.util.List;
+import java.util.ArrayList;
 
 public class SongDAO {
 
@@ -77,5 +83,37 @@ public class SongDAO {
         } catch (NumberFormatException e) {
             System.out.println("Error: Genre search requires a numeric ID");
         }
+    }
+
+    public static List<Song> getSong(Connection conn, String song_name){
+        String sql = "Select id, title, length, releaseDate, genre FROM song WHERE title = ?";
+        List<Song> songs = new ArrayList<>();
+
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, song_name);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    Song song = new Song(
+                            rs.getInt("id"),
+                            rs.getString("title"),
+                            rs.getInt("length"),
+                            rs.getDate("releaseDate"),
+                            (Genre) rs.getObject("genre")
+                    );
+                    songs.add(song);
+                }
+
+                if (songs.isEmpty()) {
+                    System.out.println("No Songs found with Song title: " + song_name);
+                }
+
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error searching songs by Song title: " + e.getMessage());
+        }
+
+        return songs;
     }
 }
