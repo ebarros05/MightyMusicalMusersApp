@@ -79,21 +79,21 @@ public class PlaylistDAO {
     }
     
 
-    public static void removeSongFromPlaylist(Connection conn, String username, String playlistName, int playlistNumber) {
-        String sql = "DELETE FROM playlist WHERE username = ? AND playlist_name = ? AND playlist_number = ?";
+    public static void removeSongFromPlaylist(Connection conn, String username, String playlistName, int song_id) {
+        String sql = "DELETE FROM playlist WHERE username = ? AND playlist_name = ? AND song_id = ?";
     
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
     
             stmt.setString(1, username);
             stmt.setString(2, playlistName);
-            stmt.setInt(3, playlistNumber);
+            stmt.setInt(3, song_id);
     
             int rowsDeleted = stmt.executeUpdate();
     
             if (rowsDeleted > 0) {
-                System.out.println("Deleted song at playlist number #" + playlistNumber + " from playlist: " + playlistName);
+                System.out.println("Deleted song ID #" + song_id + " from playlist: " + playlistName);
             } else {
-                System.out.println("No song found at playlist number #" + playlistNumber + " in playlist: " + playlistName);
+                System.out.println("No song found with song ID #" + song_id + " in playlist: " + playlistName);
             }
     
         } catch (SQLException e) {
@@ -102,7 +102,7 @@ public class PlaylistDAO {
     }
 
     public static void addAlbumToPlaylist(Connection conn, String username, String playlistName, int playlistNumber, int albumId) {
-        String sql "SELECT s.song_id FROM songs_on_album AS s INNER JOIN album AS a ON a.album_id = s.album_id where a.album_id = ?";
+        String sql = "SELECT s.song_id FROM songs_on_album AS s INNER JOIN album AS a ON a.album_id = s.album_id where a.album_id = ?";
 
         try(PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, albumId);
@@ -126,7 +126,7 @@ public class PlaylistDAO {
             try(ResultSet rs = stmt.executeQuery()) {
                 while(rs.next()) {
                     int songId = rs.getInt("song_id");
-                    removeSongFromPlaylist(conn, username, playlistName, playlistNumber, songId);
+                    removeSongFromPlaylist(conn, username, playlistName, songId);
                 }
             }
         } catch (SQLException e) {
@@ -176,7 +176,7 @@ public class PlaylistDAO {
                 System.out.println("User " + username + "'s Playlists: ");
                 boolean hasPlaylists = false;
                 while (rs.next()) {
-                    int playlistName = rs.getString("playlist_name");
+                    String playlistName = rs.getString("playlist_name");
                     int numSongs = rs.getInt("Number_of_Songs");
                     int totalDuration = rs.getInt("Total_Duration");
 
