@@ -84,9 +84,46 @@ public class SongDAO {
             System.out.println("Error: Genre search requires a numeric ID");
         }
     }
+    public static Song getASong(Connection conn, String songName) throws SQLException {
+        String query = "SELECT s.song_id, s.title, s.song_length, " +
+                "       (SELECT MIN(a.release_date) " +
+                "        FROM songs_on_album sa " +
+                "        JOIN album a ON sa.album_id = a.album_id " +
+                "        WHERE sa.song_id = s.song_id) AS release_date, " +
+                "       g.genre_id, g.genre_type " +
+                "FROM song s " +
+                "JOIN genre g ON s.genre_id = g.genre_id " +
+                "WHERE s.title = ? AND s.song_id = (SELECT MIN(song_id) FROM song WHERE title = ?)";
+
+        // Use try-with-resources to auto-close statement and result set
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            // Set parameters for the song title
+            stmt.setString(1, songName);
+            stmt.setString(2, songName);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    // Extract song attributes
+                    int id = rs.getInt("song_id");
+                    String title = rs.getString("title");
+                    int length = rs.getInt("song_length");
+                    Date releaseDate = rs.getDate("release_date");
+                    int genreId = rs.getInt("genre_id");
+                    String genreType = rs.getString("genre_type");
+
+                    // Create Genre and Song objects
+                    Genre genre = new Genre(genreId, genreType);
+                    return new Song(id, title, length, releaseDate, genre);
+                } else {
+                    // No song found
+                    return null;
+                }
+            }
+        }
+    }
 
     public static List<Song> getSong(Connection conn, String song_name){
-        String sql = "Select id, title, length, releaseDate, genre FROM song WHERE title = ?";
+        String sql = "Select song_id, title, song_length, genre FROM song WHERE title = ?";
         List<Song> songs = new ArrayList<>();
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -95,9 +132,9 @@ public class SongDAO {
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     Song song = new Song(
-                            rs.getInt("id"),
+                            rs.getInt("song_id"),
                             rs.getString("title"),
-                            rs.getInt("length"),
+                            rs.getInt("song_length"),
                             rs.getDate("releaseDate"),
                             (Genre) rs.getObject("genre")
                     );

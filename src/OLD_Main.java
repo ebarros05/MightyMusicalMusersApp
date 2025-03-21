@@ -96,17 +96,9 @@ public class OLD_Main {
                                 case 3://play song
                                     System.out.println("Please enter a song name to play");
                                     inp = in.nextLine();
-                                    List<Song> songs = SongDAO.getSong(conn, inp);
-                                    if (songs.isEmpty()) {
-                                        System.out.println("No songs found with that name!");
-                                    } else if (songs.size()==1){
-                                        System.out.println("Playing "+inp);
-                                        PlayHistoryDAO.playSong(conn, logged_in.getUsername(), songs.get(0).getId());
-                                    } else {
-                                        System.out.println("Found "+songs.size()+" songs with that name");
-                                        System.out.println("I will play the first one that matches: '"+songs.get(0).getTitle()+"'");
-                                        PlayHistoryDAO.playSong(conn, logged_in.getUsername(), songs.get(0).getId());
-                                    }
+                                    Song songz = SongDAO.getASong(conn, inp);
+                                    System.out.println("Found "+songz+" songs with that name");
+                                    PlayHistoryDAO.playSong(conn, logged_in.getUsername(), songz.getId());
                                     break;
                                 case 4://edit playlist name
                                     String newName;
