@@ -16,7 +16,7 @@ public class OLD_Main {
     private static String dbUser = "";
     private static String dbPassword = "";
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
         // Load the database connection information from the properties file
         try (FileInputStream fis = new FileInputStream("config.properties")) {
             Properties properties = new Properties();
@@ -36,7 +36,9 @@ public class OLD_Main {
             e.printStackTrace();
             return; // Exit program if driver isn't found
         }
-        try (Connection conn = DriverManager.getConnection(dbUrl, dbUser, dbPassword)) {
+        Connection conn = null;
+        try {
+            conn = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
             System.out.println("Connected to database!");
 
             // Example user data
@@ -97,6 +99,11 @@ public class OLD_Main {
 
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+        finally {
+            if (conn != null) {
+                conn.close();
+            }
         }
     }
 
