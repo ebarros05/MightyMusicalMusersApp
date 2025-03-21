@@ -48,6 +48,7 @@ public class OLD_Main {
             Scanner in = new Scanner(System.in);
 
             while(running){
+                //TODO revamp playlist editing(currently its very sloppy, you have to add song id, and playlist number)
                 System.out.println("------------------------------------------");
                 System.out.println("* Enter the number of your desired option.");
 
@@ -73,37 +74,70 @@ public class OLD_Main {
                             System.out.println("1: List your playlists");
                             System.out.println("2: Play a playlist");
                             System.out.println("3: Play a song");
-                            System.out.println("4: Edit a playlist");
-                            System.out.println("5: Add an album to a playlist");
-                            System.out.println("6: Create new playlist");
-                            System.out.println("7: Delete playlist");
+                            System.out.println("4: Edit a playlist name");
+                            System.out.println("5: Add a song to a playlist");
+                            System.out.println("6: Delete a song from a playlist");
+                            System.out.println("7: Add an album to a playlist");
+                            System.out.println("8: Create new playlist");
+                            System.out.println("9: Delete playlist");
                             int libraryOption = in.nextInt();
                             in.nextLine();
                             String inp;
                             switch (libraryOption){
-                                case 1:
+                                case 1:// list
                                     System.out.println("Here are your playlists:");
                                     PlaylistDAO.displayUserPlaylists(conn, logged_in.getUsername());
                                     break;
-                                case 2:
+                                case 2://play playlist
                                     System.out.println("Please enter a playlist name to play");
                                     inp = in.nextLine();
                                     PlayHistoryDAO.playPlaylist(conn, logged_in.getUsername(), inp);
                                     break;
-                                case 3:
+                                case 3://play song
                                     System.out.println("Please enter a song name to play");
                                     inp = in.nextLine();
-                                    PlayHistoryDAO.playPlaylist(conn, logged_in.getUsername(), inp);
+                                    List<Song> songs = SongDAO.getSong(conn, inp);
+                                    if (songs.isEmpty()) {
+                                        System.out.println("No songs found with that name!");
+                                    } else if (songs.size()==1){
+                                        System.out.println("Playing "+inp);
+                                        PlayHistoryDAO.playSong(conn, logged_in.getUsername(), songs.get(0).getId());
+                                    } else {
+                                        System.out.println("Found "+songs.size()+" songs with that name");
+                                        System.out.println("I will play the first one that matches: '"+songs.get(0).getTitle()+"'");
+                                        PlayHistoryDAO.playSong(conn, logged_in.getUsername(), songs.get(0).getId());
+                                    }
                                     break;
-                                case 4:
+                                case 4://edit playlist name
                                     String newName;
-                                    System.out.println("Please enter the playlist you would like to rename:");
+                                    System.out.println("Please enter the playlist name you would like to rename:");
                                     inp = in.nextLine();
                                     System.out.println("Please enter the new name for the playlist:");
                                     newName = in.nextLine();
                                     PlaylistDAO.renamePlaylist(conn, logged_in.getUsername(),inp, newName);
                                     break;
-                                case 5:
+                                case 5://add new song to playlist
+                                    int pnumber, songnumber;
+                                    System.out.println("Please enter the playlist name to add a song to:");
+                                    inp = in.nextLine();
+                                    System.out.println("Please enter the position of the song in the playlist:");
+                                    pnumber = in.nextInt();
+                                    in.nextLine();
+                                    System.out.println("Please enter the song id to delete");
+                                    songnumber = in.nextInt();
+                                    in.nextLine();
+                                    PlaylistDAO.addSongToPlaylist(conn, logged_in.getUsername(), inp, pnumber, songnumber);
+                                    break;
+                                case 6://delete song to playlist
+                                    int songsid;
+                                    System.out.println("Please enter the playlist name to delete a song from:");
+                                    inp = in.nextLine();
+                                    System.out.println("Please enter the song id to delete:");
+                                    songsid = in.nextInt();
+                                    in.nextLine();
+                                    PlaylistDAO.removeSongFromPlaylist(conn, logged_in.getUsername(), inp, songsid);
+                                    break;
+                                case 7:// Add an album to a playlist
                                     int playlistNumber, albumId;
                                     System.out.println("Please enter a playlist name to add to:");
                                     inp = in.nextLine();
@@ -115,19 +149,20 @@ public class OLD_Main {
                                     in.nextLine();
                                     PlaylistDAO.addAlbumToPlaylist(conn, logged_in.getUsername(), inp, playlistNumber, albumId);
                                     break;
-                                case 6:
+                                case 8:// Create new playlist
                                     String playlistName;
                                     int pNumber, firstSong;
                                     System.out.println("Please enter a name for your new playlist:");
                                     playlistName = in.nextLine();
                                     System.out.println("Please enter the playlist number:");
                                     pNumber = in.nextInt();
+                                    in.nextLine();
                                     System.out.println("Please enter a first song number to add:");
                                     firstSong = in.nextInt();
                                     in.nextLine();
                                     PlaylistDAO.createPlaylist(conn, playlistName, pNumber, logged_in.getUsername(), firstSong);
                                     break;
-                                case 7:
+                                case 9:// Delete playlist
                                     System.out.println("Please enter the playlist name to delete:");
                                     inp = in.nextLine();
                                     PlaylistDAO.deletePlaylist(conn, logged_in.getUsername(), inp);
@@ -192,9 +227,10 @@ public class OLD_Main {
                                     song_Num += 1;
                                 } while (song_Num != songs.size());
                                 int choice = in.nextInt();
-
+                                in.nextLine();
                                 System.out.println("What would you like to rate this song? [From 1 - 5 Stars]");
                                 int rating = in.nextInt();
+                                in.nextLine();
                                 daos.RatingDAO.rateSong(conn, songs.get(choice - 1), logged_in, rating);
 
                             }
@@ -212,6 +248,7 @@ public class OLD_Main {
                     System.out.println("2: Create Account");
                     System.out.println("3: Search");
                     int option = in.nextInt();
+                    in.nextLine();
                     String username, password;
                     switch (option) {
                         case 1: //login
@@ -234,8 +271,9 @@ public class OLD_Main {
                                         System.out.println("No Users were found with that username.");
                                         System.out.println("Please try again, or enter q to stop the login process.");
                                     } else {
-                                        logged_in = users.getFirst();
+                                        logged_in = users.get(0);
                                         System.out.println("Successfully logged in!");
+                                        System.out.println("Please press enter to continue");
                                     }
                                 }
 
@@ -281,7 +319,7 @@ public class OLD_Main {
                                 }
                             }
 
-                            System.out.println("Please enter your first name last name:");
+                            System.out.println("Please enter your first name:");
                             String f_name = in.nextLine();
 
                             System.out.println("Please enter your last name:");
@@ -359,6 +397,7 @@ public class OLD_Main {
         System.out.println("2. Search for Users");
         System.out.println("3. Search for Artists");
         int searchChoice = in.nextInt();
+        in.nextLine();
 
         switch (searchChoice) {
             case 1:
@@ -381,6 +420,7 @@ public class OLD_Main {
         System.out.println("3: By Album name");
         System.out.println("4: By Genre name");
         int option = in.nextInt();
+        in.nextLine();
         String typeCase = "";
 
         switch (option) {
@@ -428,6 +468,7 @@ public class OLD_Main {
         System.out.println("1. Username");
         System.out.println("2. Email");
         int searchChoice = in.nextInt();
+        in.nextLine();
         List<User> foundUsers = new ArrayList<>();
         String response = "";
 
@@ -437,12 +478,12 @@ public class OLD_Main {
                 String name_of_user = in.nextLine();
                 foundUsers = daos.UserDAO.searchUsersByUsername(conn, name_of_user);
                 if (!foundUsers.isEmpty()) {
-                    System.out.println(foundUsers.getFirst());
+                    System.out.println(foundUsers.get(0));
                     if (logged_in != null) {
                         System.out.println("Would you also like to follow this user? (Y/N)");
                         response = in.nextLine();
                         if (response.equals("Y")) {
-                            daos.UserDAO.followUser(conn, logged_in.getUsername(), foundUsers.getFirst().getUsername());
+                            daos.UserDAO.followUser(conn, logged_in.getUsername(), foundUsers.get(0).getUsername());
                         }
                     }
                 } else {
@@ -454,7 +495,7 @@ public class OLD_Main {
                 String email_of_user = in.nextLine();
                 foundUsers = daos.UserDAO.searchUsersByEmail(conn, email_of_user);
                 if (!foundUsers.isEmpty()) {
-                    System.out.println(foundUsers.getFirst());
+                    System.out.println(foundUsers.get(0));
                 } else {
                     System.out.println(email_of_user + " was not found.");
                 }
@@ -465,7 +506,7 @@ public class OLD_Main {
             System.out.println("Would you also like to follow this user? (Y/N)");
             response = in.nextLine();
             if(response.equals("Y")){
-                daos.UserDAO.followUser(conn, logged_in.getUsername(), foundUsers.getFirst().getUsername());
+                daos.UserDAO.followUser(conn, logged_in.getUsername(), foundUsers.get(0).getUsername());
             }
         }
     }
@@ -477,7 +518,7 @@ public class OLD_Main {
 
         List<Artist> foundArtists = daos.ArtistDAO.getArtist(conn, artist_name);
         if (!foundArtists.isEmpty()) {
-            System.out.println(foundArtists.getFirst());
+            System.out.println(foundArtists.get(0));
         } else {
             System.out.println(artist_name + " was not found.");
         }
@@ -486,7 +527,7 @@ public class OLD_Main {
             System.out.println("Would you also like to follow this artist? (Y/N)");
             String response = in.nextLine();
             if(response.equals("Y")){
-                daos.ArtistDAO.followArtist(conn, logged_in.getUsername(), foundArtists.getFirst().getId());
+                daos.ArtistDAO.followArtist(conn, logged_in.getUsername(), foundArtists.get(0).getId());
             }
         }
 
