@@ -209,27 +209,19 @@ public class OLD_Main {
                             System.out.println("------");
                             System.out.println("Please enter the name of the song you wish to rate:");
                             String song_name = in.nextLine();
-                            List<Song> songs = daos.SongDAO.getSong(conn, song_name);
+                            Song songsToRate = daos.SongDAO.getASong(conn, song_name);
                             int song_Num = 1;
-                            if(!songs.isEmpty()){
-                                System.out.println("Choose the correct song to be rated.");
-                                System.out.println("These are the songs with that name: ");
-                                do {
-                                    System.out.println(song_Num + ": " + songs.get(song_Num - 1));
-                                    song_Num += 1;
-                                } while (song_Num != songs.size());
-                                int choice = in.nextInt();
-                                in.nextLine();
-                                System.out.println("What would you like to rate this song? [From 1 - 5 Stars]");
+                            if(songsToRate != null){
+                                System.out.println("How many stars do you want to rate '"+song_name+"'? [From 1 - 5 Stars]");
                                 int rating = in.nextInt();
-                                in.nextLine();
-                                daos.RatingDAO.rateSong(conn, songs.get(choice - 1), logged_in, rating);
-
+                                in.nextLine(); // eat the \n
+                                daos.RatingDAO.rateSong(conn, songsToRate, logged_in, rating);
                             }
                             break;
                         case 5:
                             System.out.println("Goodbye, "+logged_in.getUsername()+" see you next time!");
                             logged_in = null;
+                            // System.out.print("\033[H\033[2J");
                             break;
                     }
                     // Options for when user is not logged in (Login and Create Account)
