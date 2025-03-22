@@ -12,7 +12,7 @@ import models.Song;
 import models.User;
 import models.Artist;
 
-public class OLD_Main {
+public class Main {
     private static String dbUrl = "";
     private static String dbUser = "";
     private static String dbPassword = "";
