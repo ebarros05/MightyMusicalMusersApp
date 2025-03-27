@@ -513,4 +513,11 @@ public class Main {
         }
 
     }
+
+    public static void printUserProfile(Connection conn, User user){
+        //TODO: Display The number of collections the user has
+        //TODO: Display The number of users followed by this user
+        //TODO: Display The number of users this user is following
+        //TODO: Display Their top 10 artists (by most plays, additions to collections, or combination)
+    }
 }
