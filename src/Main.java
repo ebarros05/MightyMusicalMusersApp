@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Scanner;
 import java.util.regex.Pattern;
+import org.mindrot.jbcrypt.BCrypt;
 
 import daos.*;
 import models.Song;
@@ -240,23 +241,32 @@ public class Main {
                                 username = in.nextLine();
                                 System.out.println("Please input your password: ");
                                 password = in.nextLine();
-
-                                successful = UserDAO.login(conn, username, password);
-                                if(!successful){
-                                    System.out.println("Username or password was incorrect.");
-                                    System.out.println("Please try again, or enter q to stop the login process.");
-                                } else {
-                                    List<User> users = UserDAO.searchUsersByUsername(conn, username);
-                                    if(users.isEmpty()){
-                                        System.out.println("No Users were found with that username.");
-                                        System.out.println("Please try again, or enter q to stop the login process.");
+                                //check if password is correct
+                                String sql_for_password = "SELECT password FROM users where username = ?";
+                                try{
+                                    PreparedStatement ps = conn.prepareStatement((sql_for_password));
+                                    ps.setString(1, username);
+                                    ResultSet res = ps.executeQuery();
+                                    if (res.next()){
+                                        String hashedpass = res.getString("password");
+                                        if (BCrypt.checkpw(password, hashedpass)) {
+                                            if (UserDAO.login(conn, username, hashedpass)) {
+                                                System.out.println("Login successful!");
+                                                logged_in = UserDAO.searchUsersByUsername(conn, username).get(0);
+                                                break;
+                                            } else {
+                                                System.out.println("Database login error.");
+                                            }
+                                        } else {
+                                            System.out.println("The password was incorrect");
+                                        }
                                     } else {
-                                        logged_in = users.get(0);
-                                        System.out.println("Successfully logged in!");
-                                        System.out.println("Please press enter to continue");
+                                        System.out.println("That username was not found in our system");
                                     }
+                                } catch (java.sql.SQLException e) {
+                                    e.printStackTrace();
                                 }
-
+                                System.out.println("Type q to quit login, press enter to try again.");
                                 String exit = in.nextLine();
                                 if(exit.equals("q")){
                                     // Way to exit the loop without confusing breaks, simply states that process is
@@ -331,9 +341,12 @@ public class Main {
                                     System.out.println("Invalid date format! Please enter date in yyyy-mm-dd format.");
                                 }
                             }
+                            //hash password
+                            String hashedPassword = BCrypt.hashpw(pword, BCrypt.gensalt());
+
                             logged_in = new User(
                                     username,
-                                    pword,
+                                    hashedPassword,
                                     f_name,
                                     l_name,
                                     email,
