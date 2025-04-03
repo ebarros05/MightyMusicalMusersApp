@@ -133,7 +133,6 @@ public class Main {
                                     int playlistNumber, albumId;
                                     System.out.println("Please enter a playlist name to add to:");
                                     inp = in.nextLine();
-                                    in.nextLine();
                                     System.out.println("Please enter the album Id to be added:");
                                     albumId = in.nextInt();
                                     in.nextLine();
