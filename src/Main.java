@@ -377,6 +377,7 @@ public class Main {
         System.out.println("1. Search for Songs");
         System.out.println("2. Search for Users");
         System.out.println("3. Search for Artists");
+        System.out.println("4. Top 5 Genres In The Last Month");
         int searchChoice = in.nextInt();
         in.nextLine();
 
@@ -389,6 +390,9 @@ public class Main {
                 break;
             case 3:
                 artistSearcher(conn, logged_in);
+                break;
+            case 4:
+                SongDAO.top_genres(conn);
                 break;
         }
     }
