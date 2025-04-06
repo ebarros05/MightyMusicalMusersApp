@@ -57,7 +57,7 @@ public class PlayHistoryDAO {
                 "    ON\n" +
                 "        p.song_id = s.song_id\n" +
                 "    WHERE\n" +
-                "        p.username = 'benjaminrbremer'\n" +
+                "        p.username = ?\n" +
                 "    GROUP BY\n" +
                 "        --p.song_id,\n" +
                 "        s.title\n" +
@@ -69,6 +69,8 @@ public class PlayHistoryDAO {
         String[] titles = null;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, username);
 
             try (ResultSet rs = stmt.executeQuery()) {
 
