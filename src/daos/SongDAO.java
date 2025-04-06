@@ -253,4 +253,38 @@ public class SongDAO {
         }
     }
 
+    public static void top_genres(Connection conn){
+        String sql = "SELECT " +
+                "    g.genre_type, " +
+                "    COUNT(h.song_id) " +
+                "        AS play_count " +
+                "    FROM " +
+                "        play_history as h " +
+                "        INNER JOIN song AS s " +
+                "            ON h.song_id = s.song_id " +
+                "        INNER JOIN genre as g " +
+                "            ON s.genre_id = g.genre_id " +
+                "    WHERE " +
+                "        h.time >= date_trunc('month', CURRENT_DATE)" +
+                "    AND " +
+                "        h.time < date_trunc('month', CURRENT_DATE) + INTERVAL '1 month'" +
+                "    GROUP BY " +
+                "        g.genre_type " +
+                "    ORDER BY " +
+                "        play_count DESC " +
+                "    LIMIT 5 ";
+
+        try(PreparedStatement stmt  = conn.prepareStatement(sql)) {
+            System.out.println("Top 5 most popular genres in the last month: ");
+            try (ResultSet rs = stmt.executeQuery()) {
+                int count = 1;
+                while (rs.next()) {
+                    System.out.println("#" + count + ": " + rs.getString("genre_type") + ", Play Count: " + rs.getInt("play_count"));
+                    count++;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }
