@@ -389,7 +389,9 @@ public class Main {
         System.out.println("1. Search for Songs");
         System.out.println("2. Search for Users");
         System.out.println("3. Search for Artists");
-        System.out.println("4. Top 5 Genres In The Last Month");
+        System.out.println("4. Top 5 Genres This Month");
+        System.out.println("5: Top 50 Songs In The Last 30 Days");
+        System.out.println("6: Top 50 Songs Among Your Followers");
         int searchChoice = in.nextInt();
         in.nextLine();
 
@@ -406,6 +408,11 @@ public class Main {
             case 4:
                 SongDAO.top_genres(conn);
                 break;
+            case 5:
+                PlayHistoryDAO.displayTopSongsMonth(conn);
+                break;
+            case 6:
+                PlayHistoryDAO.displayTopSongsMyFollowers(conn, logged_in.getUsername());
         }
     }
 

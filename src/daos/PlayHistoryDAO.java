@@ -39,4 +39,133 @@ public class PlayHistoryDAO {
             e.printStackTrace();
         }
     }
+
+    public static String[] displayTopSongsMyFollowers(Connection conn, String username) {
+
+        String sql = "SELECT\n" +
+                "    counts.title,\n" +
+                "    counts.Count\n" +
+                "FROM\n" +
+                "    (SELECT\n" +
+                "         --p.song_id,\n" +
+                "         s.title,\n" +
+                "         COUNT(p.song_id) AS Count\n" +
+                "    FROM\n" +
+                "        play_history as p\n" +
+                "    INNER JOIN\n" +
+                "        song as s\n" +
+                "    ON\n" +
+                "        p.song_id = s.song_id\n" +
+                "    WHERE\n" +
+                "        p.username = ?\n" +
+                "    GROUP BY\n" +
+                "        --p.song_id,\n" +
+                "        s.title\n" +
+                "    ORDER BY\n" +
+                "        Count DESC\n" +
+                "    LIMIT 50\n" +
+                "         ) as counts";
+
+        String[] titles = null;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, username);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+
+                titles = new String[rs.getFetchSize()];
+
+                for (int i = 0; i < titles.length; i++) {
+
+                    titles[i] = rs.getString("title");
+
+                }
+
+            }
+
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+
+        }
+
+        if (titles != null) {
+
+            System.out.println("Top 50 Songs among my followers:");
+            for (int i = 0; i < titles.length; i++) {
+
+                System.out.println(i + ": " + titles[i]);
+
+            }
+
+        }
+
+        return titles;
+
+    }
+
+    public static String[] displayTopSongsMonth(Connection conn) {
+
+        String sql = "SELECT\n" +
+                "    counts.title,\n" +
+                "    counts.Count\n" +
+                "FROM\n" +
+                "    (SELECT\n" +
+                "         --p.song_id,\n" +
+                "         s.title,\n" +
+                "         COUNT(p.song_id) AS Count\n" +
+                "    FROM\n" +
+                "        play_history as p\n" +
+                "    INNER JOIN\n" +
+                "        song as s\n" +
+                "    ON\n" +
+                "        p.song_id = s.song_id\n" +
+                "    WHERE\n" +
+                "        p.time >= CURRENT_TIMESTAMP - INTERVAL '30 days'\n" +
+                "    GROUP BY\n" +
+                "        --p.song_id,\n" +
+                "        s.title\n" +
+                "    ORDER BY\n" +
+                "        Count DESC\n" +
+                "    LIMIT 50\n" +
+                "         ) as counts\n";
+
+        String[] titles = null;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            try (ResultSet rs = stmt.executeQuery()) {
+
+                titles = new String[rs.getFetchSize()];
+
+                for (int i = 0; i < titles.length; i++) {
+
+                    titles[i] = rs.getString("title");
+
+                }
+
+            }
+
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+
+        }
+
+        if (titles != null) {
+
+            System.out.println("Top 50 Songs in the Last 30 Days:");
+            for (int i = 0; i < titles.length; i++) {
+
+                System.out.println(i + ": " + titles[i]);
+
+            }
+
+        }
+
+        return titles;
+
+    }
+
 }
