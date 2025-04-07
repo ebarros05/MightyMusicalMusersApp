@@ -73,25 +73,31 @@ public class ArtistDAO {
 
     public static List<String> getTopArtists(Connection conn, String username, int limit) {
         List<String> topArtists = new ArrayList<>();
-        String sql = "SELECT a.name, COUNT(*) as play_count " +
+        String sql = "SELECT a.name, COUNT(*) AS play_count " +
                 "FROM play_history ph " +
-                "JOIN song s ON ph.song_id = s.song_id " +
-                "JOIN song_written_by swb ON s.song_id = swb.song_id " +
+                "JOIN song_written_by swb ON ph.song_id = swb.song_id " +
                 "JOIN artist a ON swb.artist_id = a.id " +
                 "WHERE ph.username = ? " +
                 "GROUP BY a.name " +
                 "ORDER BY play_count DESC " +
                 "LIMIT ?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, username);
-            ps.setInt(2, limit);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                topArtists.add(rs.getString("name"));
+
+        try {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.execute("SET max_parallel_workers_per_gather = 0");
+            }
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, username);
+                ps.setInt(2, limit);
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    topArtists.add(rs.getString("name"));
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return topArtists;
     }
 }
