@@ -60,15 +60,47 @@ public class Main {
                 if(logged_in != null){
                     System.out.println("Welcome, "+logged_in.getFirst()+" \""+logged_in.getUsername()+"\" "+logged_in.getLast()+"!");
                     System.out.println("Please choose from one of the options below:");
-                    System.out.println("1: Your Library");
-                    System.out.println("2: Mighty Musical Musers Social™");
-                    System.out.println("3: Search");
-                    System.out.println("4: Rate a Song!");
-                    System.out.println("5: Log out");
+                    System.out.println("1: View your profile");
+                    System.out.println("2: View your Library");
+                    System.out.println("3: Mighty Musical Musers Social™");
+                    System.out.println("4: Search");
+                    System.out.println("5: Rate a Song!");
+                    System.out.println("6: Log out");
                     int uoption = in.nextInt();
                     in.nextLine();
                     switch (uoption) {
                         case 1:
+                            System.out.println("YOUR PROFILE");
+                            System.out.println("-----------");
+
+                            // Display basic user info
+                            System.out.println("Username: " + logged_in.getUsername());
+                            System.out.println("Name: " + logged_in.getFirst() + " " + logged_in.getLast());
+                            System.out.println("Email: " + logged_in.getEmail());
+
+                            // Get the number of collections (playlists) the user has
+                            int collectionCount = UserDAO.getUserPlaylistCount(conn, logged_in.getUsername());
+                            System.out.println("Number of Collections: " + collectionCount);
+
+                            // Get follower/following counts
+                            int followingCount = UserDAO.getFollowingCount(conn, logged_in.getUsername());
+                            int followerCount = UserDAO.getFollowerCount(conn, logged_in.getUsername());
+                            System.out.println("Following: " + followingCount + " users");
+                            System.out.println("Followers: " + followerCount + " users");
+
+                            // Get top 10 artists
+                            System.out.println("\nYour Top 10 Artists:");
+                            List<String> topArtists = ArtistDAO.getTopArtists(conn, logged_in.getUsername(), 10);
+                            if (topArtists.isEmpty()) {
+                                System.out.println("No artist data available yet!");
+                            } else {
+                                for (int i = 0; i < topArtists.size(); i++) {
+                                    System.out.println((i + 1) + ". " + topArtists.get(i));
+                                }
+                            }
+                            break;
+
+                        case 2:
                             System.out.println("YOUR LIBRARY");
                             System.out.println("-------------");
                             System.out.println("Please choose from one of the options below:");
@@ -159,7 +191,7 @@ public class Main {
                                     break;
                             }
                             break;
-                        case 2:
+                        case 3:
                             System.out.println("MIGHT MUSICAL MUSERS SOCIAL™");
                             System.out.println("-----------------------------");
                             System.out.println("Please choose from one of the options below:");
@@ -196,12 +228,12 @@ public class Main {
                                     break;
                             }
                             break;
-                        case 3:
+                        case 4:
                             System.out.println("SEARCHING!");
                             System.out.println("----------");
                             searchHelperFunction(conn, logged_in);
                             break;
-                        case 4:
+                        case 5:
                             // Performs the rating for songs
                             System.out.println("RATING");
                             System.out.println("------");
@@ -215,7 +247,7 @@ public class Main {
                                 daos.RatingDAO.rateSong(conn, songsToRate, logged_in, rating);
                             }
                             break;
-                        case 5:
+                        case 6:
                             System.out.println("Goodbye, "+logged_in.getUsername()+" see you next time!");
                             logged_in = null;
                             // System.out.print("\033[H\033[2J");
@@ -536,6 +568,7 @@ public class Main {
         }
 
     }
+
 
     public static void printUserProfile(Connection conn, User user){
         //TODO: Display The number of collections the user has

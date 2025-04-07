@@ -177,4 +177,51 @@ public class UserDAO {
 
         return users;
     }
+
+    // Add to PlaylistDAO class
+    public static int getUserPlaylistCount(Connection conn, String username) {
+        String sql = "SELECT COUNT(DISTINCT playlist_name) AS playlist_count FROM playlist WHERE username = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, username);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("playlist_count");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error getting playlist count: " + e.getMessage());
+        }
+        return 0;
+    }
+
+    // Add to UserDAO class
+    public static int getFollowingCount(Connection conn, String username) {
+        String sql = "SELECT COUNT(*) AS following_count FROM following_user WHERE username = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, username);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("following_count");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error getting following count: " + e.getMessage());
+        }
+        return 0;
+    }
+
+    public static int getFollowerCount(Connection conn, String username) {
+        String sql = "SELECT COUNT(*) AS follower_count FROM following_user WHERE following = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, username);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("follower_count");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error getting follower count: " + e.getMessage());
+        }
+        return 0;
+    }
+
+
+
 }
