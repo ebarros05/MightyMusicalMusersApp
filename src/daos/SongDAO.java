@@ -2,11 +2,10 @@ package daos;
 
 import models.Genre;
 import models.Song;
-import models.User;
 
 import java.sql.*;
-import java.util.List;
-import java.util.ArrayList;
+import java.sql.Date;
+import java.util.*;
 
 import static daos.PlaylistDAO.addSongToPlaylist;
 
@@ -298,13 +297,16 @@ public class SongDAO {
         }
     }
 
-    public static void followers_song_recommendations(Connection conn, String username) {
-        String sql = "";
+    public static String[] followers_song_recommendations(Connection conn, String username) {
+        String[] titles = PlayHistoryDAO.displayTopSongsMyFollowers(conn,username);
 
-        try(PreparedStatement stmt =  conn.prepareStatement(sql)) {
+        int num_songs = 5;
+        List<String> temp = Arrays.asList(titles);
+        Collections.shuffle(temp);
+        List<String> recommendations = temp.subList(0, num_songs);
 
-        } catch(SQLException e) {
-            e.printStackTrace();
-        }
+        System.out.println();
+
+        return recommendations.toArray(new String[0]);
     }
 }
