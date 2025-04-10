@@ -576,4 +576,5 @@ public class Main {
         //TODO: Display The number of users this user is following
         //TODO: Display Their top 10 artists (by most plays, additions to collections, or combination)
     }
+
 }
