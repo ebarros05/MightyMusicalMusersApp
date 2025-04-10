@@ -287,4 +287,24 @@ public class SongDAO {
             e.printStackTrace();
         }
     }
+
+    public static void play_history_song_recommendations(Connection conn, String username) {
+        String sql = "";
+
+        try(PreparedStatement stmt =  conn.prepareStatement(sql)) {
+
+        } catch(SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void followers_song_recommendations(Connection conn, String username) {
+        String sql = "";
+
+        try(PreparedStatement stmt =  conn.prepareStatement(sql)) {
+
+        } catch(SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }
