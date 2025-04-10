@@ -299,6 +299,9 @@ public class SongDAO {
     }
 
     public static void followers_song_recommendations(Connection conn, String username) {
+        //get all of the songs play history
+        //find median
+        //select 50 around median and choose random 3
         String sql = "";
 
         try(PreparedStatement stmt =  conn.prepareStatement(sql)) {
