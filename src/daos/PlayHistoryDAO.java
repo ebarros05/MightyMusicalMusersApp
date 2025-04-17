@@ -42,7 +42,7 @@ public class PlayHistoryDAO {
         }
     }
 
-    public static List<String> displayTopSongsMyFollowers(Connection conn, String username) {
+    public static List<String> displayTopSongsMyFollowers(Connection conn, String username, boolean print) {
 
         String sql = "SELECT counts.title, counts.PlaysCount FROM (SELECT s.title, COUNT(p.song_id) AS PlaysCount FROM play_history as p INNER JOIN song as s ON p.song_id = s.song_id WHERE p.username = 'SebbySoo7' GROUP BY s.title ORDER BY PlaysCount DESC LIMIT 50) as counts";
 
@@ -54,11 +54,12 @@ public class PlayHistoryDAO {
 
             try (ResultSet rs = stmt.executeQuery()) {
 
+                // System.out.println("Executing the display songs my followers query");
                 titles = new LinkedList<>();
 
                 while(rs.next()) {
 
-                    System.out.println("Found a song");
+                    // System.out.println("Found a song");
                     titles.add(rs.getString("title"));
 
                 }
@@ -71,7 +72,7 @@ public class PlayHistoryDAO {
 
         }
 
-        if (titles != null) {
+        if (titles != null && print) {
 
             System.out.println("Top 50 Songs among my followers:");
             int counter = 1;
