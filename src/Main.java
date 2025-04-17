@@ -447,7 +447,7 @@ public class Main {
                 PlayHistoryDAO.displayTopSongsMonth(conn);
                 break;
             case 6:
-                PlayHistoryDAO.displayTopSongsMyFollowers(conn, logged_in.getUsername());
+                PlayHistoryDAO.displayTopSongsMyFollowers(conn, logged_in.getUsername(), true);
                 break;
             case 7:
                 SongDAO.followers_song_recommendations(conn, logged_in.getUsername());
