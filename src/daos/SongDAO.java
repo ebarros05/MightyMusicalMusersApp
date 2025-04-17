@@ -342,7 +342,7 @@ public class SongDAO {
 
 
     public static List<String> followers_song_recommendations(Connection conn, String username) {
-        List<String> titles = PlayHistoryDAO.displayTopSongsMyFollowers(conn,username);
+        List<String> titles = PlayHistoryDAO.displayTopSongsMyFollowers(conn,username, false);
         if(titles == null || titles.isEmpty()) {
             System.out.println("No Recommendations found for " + username);
             return titles;
