@@ -341,24 +341,24 @@ public class SongDAO {
 
 
 
-    public static String[] followers_song_recommendations(Connection conn, String username) {
-        String[] titles = PlayHistoryDAO.displayTopSongsMyFollowers(conn,username);
-        if(titles == null || titles.length == 0) {
+    public static List<String> followers_song_recommendations(Connection conn, String username) {
+        List<String> titles = PlayHistoryDAO.displayTopSongsMyFollowers(conn,username);
+        if(titles == null || titles.isEmpty()) {
             System.out.println("No Recommendations found for " + username);
             return titles;
         }
 
         int numSongs = 5;
 
-        List<String> temp = Arrays.asList(titles);
-        Collections.shuffle(temp);
-        String[] finalRecs = temp.toArray(new String[0]);
+        //List<String> temp = Arrays.asList(titles);
+        Collections.shuffle(titles);
+        //String[] finalRecs = temp.toArray(new String[0]);
 
         System.out.println();
         for(int i = 0; i < numSongs; i++){
-            System.out.println(finalRecs[i]);
+            System.out.println(titles.get(i));
         }
 
-        return finalRecs;
+        return titles;
     }
 }
