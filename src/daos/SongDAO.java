@@ -124,37 +124,39 @@ public class SongDAO {
         }
     }
 
-    public static List<Song> getSong(Connection conn, String song_name){
-        String sql = "Select song_id, title, song_length, genre FROM song WHERE title = ?";
-        List<Song> songs = new ArrayList<>();
+    public static Song getSongById(Connection conn, int songId) throws SQLException {
+        String query = "SELECT s.song_id, s.title, s.song_length, " +
+                "       (SELECT MIN(a.release_date) " +
+                "        FROM songs_on_album sa " +
+                "        JOIN album a ON sa.album_id = a.album_id " +
+                "        WHERE sa.song_id = s.song_id) AS release_date, " +
+                "       g.genre_id, g.genre_type " +
+                "FROM song s " +
+                "JOIN genre g ON s.genre_id = g.genre_id " +
+                "WHERE s.song_id = ?";
 
-        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, song_name);
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, songId);
 
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
-                    Song song = new Song(
-                            rs.getInt("song_id"),
-                            rs.getString("title"),
-                            rs.getInt("song_length"),
-                            rs.getDate("releaseDate"),
-                            (Genre) rs.getObject("genre")
-                    );
-                    songs.add(song);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    int id = rs.getInt("song_id");
+                    String title = rs.getString("title");
+                    int length = rs.getInt("song_length");
+                    Date releaseDate = rs.getDate("release_date");
+                    int genreId = rs.getInt("genre_id");
+                    String genreType = rs.getString("genre_type");
+
+                    Genre genre = new Genre(genreId, genreType);
+                    return new Song(id, title, length, releaseDate, genre);
+                } else {
+                    return null;
                 }
-
-                if (songs.isEmpty()) {
-                    System.out.println("No Songs found with Song title: " + song_name);
-                }
-
             }
-
-        } catch (SQLException e) {
-            System.out.println("Error searching songs by Song title: " + e.getMessage());
         }
-
-        return songs;
     }
+
+
     public static Genre getGenreById(Connection conn, int genreId) {
         String sql = "SELECT genre_id, name FROM genre WHERE genre_id = ?";
 

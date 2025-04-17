@@ -116,6 +116,7 @@ public class Main {
                             int libraryOption = in.nextInt();
                             in.nextLine();
                             String inp;
+                            int intInp;
                             switch (libraryOption){
                                 case 1:// list
                                     System.out.println("Here are your playlists:");
@@ -127,10 +128,10 @@ public class Main {
                                     PlayHistoryDAO.playPlaylist(conn, logged_in.getUsername(), inp);
                                     break;
                                 case 3://play song
-                                    System.out.println("Please enter a song name to play");
-                                    inp = in.nextLine();
-                                    Song songz = SongDAO.getASong(conn, inp);
-                                    System.out.println("Found "+songz+" songs with that name");
+                                    System.out.println("Please enter a song id to play");
+                                    intInp = in.nextInt();
+                                    Song songz = SongDAO.getSongById(conn, intInp);
+                                    System.out.println("Found "+songz+" songs with that id1");
                                     PlayHistoryDAO.playSong(conn, logged_in.getUsername(), songz.getId());
                                     break;
                                 case 4://edit playlist name
