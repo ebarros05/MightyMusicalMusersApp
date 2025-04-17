@@ -54,6 +54,7 @@ public class PlayHistoryDAO {
 
             try (ResultSet rs = stmt.executeQuery()) {
 
+                System.out.println("Executing the display songs my followers query");
                 titles = new LinkedList<>();
 
                 while(rs.next()) {
