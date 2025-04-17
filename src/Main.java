@@ -448,10 +448,13 @@ public class Main {
                 break;
             case 6:
                 PlayHistoryDAO.displayTopSongsMyFollowers(conn, logged_in.getUsername());
+                break;
             case 7:
                 SongDAO.followers_song_recommendations(conn, logged_in.getUsername());
+                break;
             case 8:
                 SongDAO.play_history_song_recommendations(conn, logged_in.getUsername());
+                break;
         }
     }
 
