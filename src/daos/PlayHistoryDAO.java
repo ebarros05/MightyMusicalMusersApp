@@ -42,7 +42,7 @@ public class PlayHistoryDAO {
         }
     }
 
-    public static String[] displayTopSongsMyFollowers(Connection conn, String username) {
+    public static List<String> displayTopSongsMyFollowers(Connection conn, String username) {
 
         String sql = "SELECT\n" +
                 "    counts.title,\n" +
@@ -68,7 +68,7 @@ public class PlayHistoryDAO {
                 "    LIMIT 50\n" +
                 "         ) as counts";
 
-        String[] titles = null;
+        List<String> titles = null;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -76,11 +76,11 @@ public class PlayHistoryDAO {
 
             try (ResultSet rs = stmt.executeQuery()) {
 
-                titles = new String[rs.getFetchSize()];
+                titles = new LinkedList<>();
 
-                for (int i = 0; i < titles.length; i++) {
+                while(rs.next()) {
 
-                    titles[i] = rs.getString("title");
+                    titles.add(rs.getString("title"));
 
                 }
 
@@ -95,9 +95,11 @@ public class PlayHistoryDAO {
         if (titles != null) {
 
             System.out.println("Top 50 Songs among my followers:");
-            for (int i = 0; i < titles.length; i++) {
+            int counter = 1;
+            for(String title : titles) {
 
-                System.out.println(i + ": " + titles[i]);
+                System.out.println(counter + ": " + title);
+                counter++;
 
             }
 
