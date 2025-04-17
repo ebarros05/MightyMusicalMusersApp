@@ -299,14 +299,22 @@ public class SongDAO {
 
     public static String[] followers_song_recommendations(Connection conn, String username) {
         String[] titles = PlayHistoryDAO.displayTopSongsMyFollowers(conn,username);
+        if(titles == null || titles.length == 0) {
+            System.out.println("No Recommendations found for " + username);
+            return titles;
+        }
 
-        int num_songs = 5;
+        int numSongs = 5;
+
         List<String> temp = Arrays.asList(titles);
         Collections.shuffle(temp);
-        List<String> recommendations = temp.subList(0, num_songs);
+        String[] finalRecs = temp.toArray(new String[0]);
 
         System.out.println();
+        for(int i = 0; i < numSongs; i++){
+            System.out.println(finalRecs[i]);
+        }
 
-        return recommendations.toArray(new String[0]);
+        return finalRecs;
     }
 }
