@@ -450,6 +450,7 @@ public class Main {
             case 7:
                 SongDAO.followers_song_recommendations(conn, logged_in.getUsername());
             case 8:
+                SongDAO.play_history_song_recommendations(conn, logged_in.getUsername());
         }
     }
 
