@@ -107,7 +107,7 @@ public class PlayHistoryDAO {
 
     }
 
-    public static String[] displayTopSongsMonth(Connection conn) {
+    public static List<String> displayTopSongsMonth(Connection conn) {
 
         String sql = "SELECT\n" +
                 "    counts.title,\n" +
