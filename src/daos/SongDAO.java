@@ -356,13 +356,11 @@ public class SongDAO {
 
         int numSongs = 5;
 
-        //List<String> temp = Arrays.asList(titles);
         Collections.shuffle(titles);
-        //String[] finalRecs = temp.toArray(new String[0]);
 
-        System.out.println();
+        System.out.println("Here's 5 random song recommendations based on your followers: ");
         for(int i = 0; i < numSongs; i++){
-            System.out.println(titles.get(i));
+            System.out.println(i+1 + ": " + titles.get(i));
         }
 
         return titles;
