@@ -58,6 +58,7 @@ public class PlayHistoryDAO {
 
                 while(rs.next()) {
 
+                    System.out.println("Found a song");
                     titles.add(rs.getString("title"));
 
                 }
