@@ -425,6 +425,8 @@ public class Main {
         System.out.println("4. Top 5 Genres This Month");
         System.out.println("5: Top 50 Songs In The Last 30 Days");
         System.out.println("6: Top 50 Songs Among Your Followers");
+        System.out.println("7: Song Recommendations based on your followers");
+        System.out.println("8: Song Recommendations based on your play history");
         int searchChoice = in.nextInt();
         in.nextLine();
 
@@ -446,6 +448,10 @@ public class Main {
                 break;
             case 6:
                 PlayHistoryDAO.displayTopSongsMyFollowers(conn, logged_in.getUsername());
+            case 7:
+                SongDAO.followers_song_recommendations(conn, logged_in.getUsername());
+            case 8:
+                SongDAO.play_history_song_recommendations(conn, logged_in.getUsername());
         }
     }
 
@@ -577,4 +583,5 @@ public class Main {
         //TODO: Display The number of users this user is following
         //TODO: Display Their top 10 artists (by most plays, additions to collections, or combination)
     }
+
 }

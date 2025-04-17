@@ -2,11 +2,10 @@ package daos;
 
 import models.Genre;
 import models.Song;
-import models.User;
 
 import java.sql.*;
-import java.util.List;
-import java.util.ArrayList;
+import java.sql.Date;
+import java.util.*;
 
 import static daos.PlaylistDAO.addSongToPlaylist;
 
@@ -288,5 +287,78 @@ public class SongDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void play_history_song_recommendations(Connection conn, String username) {
+        String sql = "SELECT DISTINCT s.song_id, s.title " +
+                "FROM song s " +
+                "JOIN song_written_by sw ON s.song_id = sw.song_id " +
+                "WHERE sw.artist_id IN ( " +
+                "    SELECT DISTINCT swb.artist_id " +
+                "    FROM play_history ph " +
+                "    JOIN song_written_by swb ON ph.song_id = swb.song_id " +
+                "    WHERE ph.username = ? " +
+                ") " +
+                "AND s.song_id NOT IN ( " +
+                "    SELECT song_id " +
+                "    FROM play_history " +
+                "    WHERE username = ? )";
+
+        try (Statement disableParallel = conn.createStatement()) {
+            disableParallel.execute("SET max_parallel_workers_per_gather = 0");
+        } catch (SQLException e) {
+            System.err.println("Warning: Couldn't disable parallel workers.");
+            e.printStackTrace();
+        }
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, username);
+            stmt.setString(2, username);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                List<String> songList = new ArrayList<>();
+
+                while (rs.next()) {
+                    int songId = rs.getInt("song_id");
+                    String title = rs.getString("title");
+                    songList.add(songId + ": " + title);
+                }
+
+                Collections.shuffle(songList);
+
+                System.out.println("Here's 5 Random song recommendations based on your play history:");
+                for (int i = 0; i < Math.min(5, songList.size()); i++) {
+                    System.out.println(songList.get(i));
+                }
+
+            } catch (SQLException e) {
+                System.out.println("bro what: " + e);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+    public static String[] followers_song_recommendations(Connection conn, String username) {
+        String[] titles = PlayHistoryDAO.displayTopSongsMyFollowers(conn,username);
+        if(titles == null || titles.length == 0) {
+            System.out.println("No Recommendations found for " + username);
+            return titles;
+        }
+
+        int numSongs = 5;
+
+        List<String> temp = Arrays.asList(titles);
+        Collections.shuffle(temp);
+        String[] finalRecs = temp.toArray(new String[0]);
+
+        System.out.println();
+        for(int i = 0; i < numSongs; i++){
+            System.out.println(finalRecs[i]);
+        }
+
+        return finalRecs;
     }
 }
