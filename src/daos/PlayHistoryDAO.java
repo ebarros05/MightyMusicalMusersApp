@@ -46,6 +46,13 @@ public class PlayHistoryDAO {
 
         String sql = "SELECT counts.title, counts.PlaysCount FROM (SELECT s.title, COUNT(p.song_id) AS PlaysCount FROM play_history as p INNER JOIN song as s ON p.song_id = s.song_id WHERE p.username = 'SebbySoo7' GROUP BY s.title ORDER BY PlaysCount DESC LIMIT 50) as counts";
 
+        try (Statement disableParallel = conn.createStatement()) {
+            disableParallel.execute("SET max_parallel_workers_per_gather = 0");
+        } catch (SQLException e) {
+            System.err.println("Warning: Couldn't disable parallel workers.");
+            e.printStackTrace();
+        }
+
         List<String> titles = null;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -113,6 +120,12 @@ public class PlayHistoryDAO {
                 "        Count DESC\n" +
                 "    LIMIT 50\n" +
                 "         ) as counts\n";
+        try (Statement disableParallel = conn.createStatement()) {
+            disableParallel.execute("SET max_parallel_workers_per_gather = 0");
+        } catch (SQLException e) {
+            System.err.println("Warning: Couldn't disable parallel workers.");
+            e.printStackTrace();
+        }
 
         List<String> titles = null;
 
