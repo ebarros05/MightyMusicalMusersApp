@@ -44,7 +44,7 @@ public class PlayHistoryDAO {
 
     public static List<String> displayTopSongsMyFollowers(Connection conn, String username, boolean print) {
 
-        String sql = "SELECT counts.title, counts.PlaysCount FROM (SELECT s.title, COUNT(p.song_id) AS PlaysCount FROM play_history as p INNER JOIN song as s ON p.song_id = s.song_id WHERE p.username = 'SebbySoo7' GROUP BY s.title ORDER BY PlaysCount DESC LIMIT 50) as counts";
+        String sql = "SELECT counts.title, counts.PlaysCount FROM (SELECT s.title, COUNT(p.song_id) AS PlaysCount FROM play_history as p INNER JOIN song as s ON p.song_id = s.song_id WHERE p.username = ? GROUP BY s.title ORDER BY PlaysCount DESC LIMIT 50) as counts";
 
         try (Statement disableParallel = conn.createStatement()) {
             disableParallel.execute("SET max_parallel_workers_per_gather = 0");
@@ -57,7 +57,7 @@ public class PlayHistoryDAO {
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            // stmt.setString(1, username);
+             stmt.setString(1, username);
 
             try (ResultSet rs = stmt.executeQuery()) {
 
