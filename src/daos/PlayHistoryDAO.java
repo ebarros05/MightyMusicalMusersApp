@@ -1,6 +1,8 @@
 package daos;
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.util.LinkedList;
+import java.util.List;
 
 public class PlayHistoryDAO {
 
@@ -131,17 +133,17 @@ public class PlayHistoryDAO {
                 "    LIMIT 50\n" +
                 "         ) as counts\n";
 
-        String[] titles = null;
+        List<String> titles = null;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             try (ResultSet rs = stmt.executeQuery()) {
 
-                titles = new String[rs.getFetchSize()];
+                titles = new LinkedList<>();
 
-                for (int i = 0; i < titles.length; i++) {
+                while(rs.next()) {
 
-                    titles[i] = rs.getString("title");
+                    titles.add(rs.getString("title"));
 
                 }
 
@@ -156,9 +158,11 @@ public class PlayHistoryDAO {
         if (titles != null) {
 
             System.out.println("Top 50 Songs in the Last 30 Days:");
-            for (int i = 0; i < titles.length; i++) {
+            int counter = 1;
+            for(String title : titles) {
 
-                System.out.println(i + ": " + titles[i]);
+                System.out.println(counter + ": " + title);
+                counter++;
 
             }
 
