@@ -44,29 +44,7 @@ public class PlayHistoryDAO {
 
     public static List<String> displayTopSongsMyFollowers(Connection conn, String username) {
 
-        String sql = "SELECT\n" +
-                "    counts.title,\n" +
-                "    counts.Count\n" +
-                "FROM\n" +
-                "    (SELECT\n" +
-                "         --p.song_id,\n" +
-                "         s.title,\n" +
-                "         COUNT(p.song_id) AS Count\n" +
-                "    FROM\n" +
-                "        play_history as p\n" +
-                "    INNER JOIN\n" +
-                "        song as s\n" +
-                "    ON\n" +
-                "        p.song_id = s.song_id\n" +
-                "    WHERE\n" +
-                "        p.username = ?\n" +
-                "    GROUP BY\n" +
-                "        --p.song_id,\n" +
-                "        s.title\n" +
-                "    ORDER BY\n" +
-                "        Count DESC\n" +
-                "    LIMIT 50\n" +
-                "         ) as counts";
+        String sql = "SELECT counts.title, counts.PlaysCount FROM (SELECT s.title, COUNT(p.song_id) AS PlaysCount FROM play_history as p INNER JOIN song as s ON p.song_id = s.song_id WHERE p.username = ? GROUP BY s.title ORDER BY PlaysCount DESC LIMIT 50) as counts";
 
         List<String> titles = null;
 
