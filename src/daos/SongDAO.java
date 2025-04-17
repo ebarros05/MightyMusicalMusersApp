@@ -274,6 +274,12 @@ public class SongDAO {
                 "    ORDER BY " +
                 "        play_count DESC " +
                 "    LIMIT 5 ";
+        try (Statement disableParallel = conn.createStatement()) {
+            disableParallel.execute("SET max_parallel_workers_per_gather = 0");
+        } catch (SQLException e) {
+            System.err.println("Warning: Couldn't disable parallel workers.");
+            e.printStackTrace();
+        }
 
         try(PreparedStatement stmt  = conn.prepareStatement(sql)) {
             System.out.println("Top 5 most popular genres in the last month: ");
@@ -341,6 +347,7 @@ public class SongDAO {
 
 
 
+<<<<<<< HEAD
     public static List<String> followers_song_recommendations(Connection conn, String username) {
         List<String> titles = PlayHistoryDAO.displayTopSongsMyFollowers(conn,username, false);
         if(titles == null || titles.isEmpty()) {
@@ -360,5 +367,27 @@ public class SongDAO {
         }
 
         return titles;
+=======
+    public static String[] followers_song_recommendations(Connection conn, String username) {
+//        String[] titles = PlayHistoryDAO.displayTopSongsMyFollowers(conn,username);
+//        if(titles == null || titles.length == 0) {
+//            System.out.println("No Recommendations found for " + username);
+//            return titles;
+//        }
+//
+//        int numSongs = 5;
+//
+//        List<String> temp = Arrays.asList(titles);
+//        Collections.shuffle(temp);
+//        String[] finalRecs = temp.toArray(new String[0]);
+//
+//        System.out.println();
+//        for(int i = 0; i < numSongs; i++){
+//            System.out.println(finalRecs[i]);
+//        }
+//
+//        return finalRecs;
+        return null;
+>>>>>>> b1bb4020bd1bac2571757bbde220e08db60b7063
     }
 }
